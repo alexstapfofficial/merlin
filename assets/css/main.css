@@ -1,0 +1,9 @@
+@font-face {
+    font-family: "Astronomicon";
+    src: url("~/assets/fonts/Astronomicon.ttf")  
+}
+
+@font-face {
+    font-family: "JustCosmic";
+    src: url("~/assets/fonts/just-cosmic.ttf") format('truetype')
+}
