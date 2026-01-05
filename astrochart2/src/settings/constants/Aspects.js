@@ -12,7 +12,7 @@ export const ASPECTS_ID = "aspects"
 * @type {Boolean}
 * @default true
 */
-export const DRAW_ASPECTS = true
+export const DRAW_ASPECTS = false
 
 /*
 * Font size - aspects
@@ -28,8 +28,8 @@ export const ASPECTS_FONT_SIZE = 18
 * @type {Array}
 */
 export const DEFAULT_ASPECTS = [
-  {name:"Conjunction", angle:0, orb:2},
-  {name:"Opposition", angle:180, orb:2},
-  {name:"Trine", angle:120, orb:2},
-  {name:"Square", angle:90, orb:2}
+  {name:"Conjunction", angle:0, orb:8},
+  {name:"Opposition", angle:180, orb:8},
+  {name:"Trine", angle:120, orb:8},
+  {name:"Square", angle:90, orb:8},
 ]

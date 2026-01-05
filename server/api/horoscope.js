@@ -12,6 +12,6 @@ export default defineEventHandler(async (event) => {
     const birthLatitude = body.birthlocation[1];   // Latitude for Erlenbach am Main
     const birthLongitude = body.birthlocation[0]; 
     const horoscope = new Horoscope(birthYear, birthMonth, birthDay, birthHour, birthMinute, birthLatitude, birthLongitude);
-                                    
+
   return {horoscope};
 })

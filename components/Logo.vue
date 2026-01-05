@@ -1,3 +1,3 @@
 <template>
-    <h1 class="font-justcosmic text-gray-600">CosmicPath</h1>
+    <h1 class="font-justcosmic text-gray-600">Merlin</h1>
 </template>

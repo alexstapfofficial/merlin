@@ -1,13 +1,15 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  
-  compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
-  modules: ['@nuxt/ui', '@nuxt/content', '@nuxt/fonts'],
+  modules: ['@nuxt/ui', '@nuxt/fonts', '@pinia/nuxt', '@nuxtjs/i18n'],
   extends: ['@nuxt/ui-pro'],
+  i18n: {
+    vueI18n: './i18n.config.ts' // if you are using custom path, default 
+  },
   css: [
     '@/assets/css/main.css',
   ],
+
   app:{
     head:{
         meta: [
@@ -24,5 +26,7 @@ export default defineNuxtConfig({
         },
       ],
     }
-  }
+  },
+
+  compatibilityDate: '2025-02-19'
 })

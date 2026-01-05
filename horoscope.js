@@ -34,20 +34,12 @@ class Horoscope {
   // Map longitude to zodiac sign
   getZodiacSign(longitude) {
     const zodiacSigns = [
-      "Aries",
-      "Taurus",
-      "Gemini",
-      "Cancer",
-      "Leo",
-      "Virgo",
-      "Libra",
-      "Scorpio",
-      "Sagittarius",
-      "Capricorn",
-      "Aquarius",
-      "Pisces",
+      "Aries", "Taurus", "Gemini", "Cancer", "Leo", 
+      "Virgo", "Libra", "Scorpio", "Sagittarius", 
+      "Capricorn", "Aquarius", "Pisces"
     ];
-    const index = Math.floor(longitude / 30); // Each sign spans 30 degrees
+    const normalizedLongitude = longitude % 360; // Normiere auf 0-360°
+    const index = Math.floor(normalizedLongitude / 30);
     return zodiacSigns[index];
   }
 
@@ -137,16 +129,25 @@ class Horoscope {
     }
   }
 
+  normalizeAngle(angle) {
+    if (angle < 0) {
+      return angle + 360;
+    }
+    return angle % 360;
+  }
+
   // Assign planets to houses
   assignPlanetsToHouses() {
     for (const planet of this.planetaryPositions) {
+      let assignedHouse = null;
+  
       for (let i = 0; i < this.houses.Houses.length; i++) {
-        console.log(this.houses)
         const currentHouse = this.houses.Houses[i];
-        const nextHouse = this.houses.Houses[(i + 1) % this.houses.Houses.length]; // Handle 12th to 1st house transition
-        const houseCuspStart = currentHouse.angle;
-        const nextHouseCuspStart = nextHouse.angle;
+        const nextHouse = this.houses.Houses[(i + 1) % this.houses.Houses.length]; // Handle Übergang von 12 zu 1
+        const houseCuspStart = this.normalizeAngle(currentHouse.angle);
+        const nextHouseCuspStart = this.normalizeAngle(nextHouse.angle);
 
+  
         if (
           this.isPlanetInHouse(
             planet.longitude,
@@ -154,11 +155,14 @@ class Horoscope {
             nextHouseCuspStart
           )
         ) {
-          currentHouse.planets.push(planet.name);
+          currentHouse.planets.push({name: planet.name, sign: this.getZodiacSign(planet.angle), degree: planet.angle});
+          assignedHouse = currentHouse.houseNumber;
+          break;
         }
       }
     }
   }
+  
 
   // Calculate aspects between planets
   calculateAspects() {

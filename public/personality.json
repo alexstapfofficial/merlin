@@ -1,0 +1,152 @@
+{
+  "Sonne": [
+    {
+      "name": "Widder",
+      "deutung": "Dein Wesenskern ist spontan, tatkräftig und pionierhaft; Herausforderungen lassen dich aufblühen."
+    },
+    {
+      "name": "Stier",
+      "deutung": "Stabilität, Genuss und sinnliche Sicherheit bilden den Kern deiner Identität."
+    },
+    {
+      "name": "Zwillinge",
+      "deutung": "Neugier, geistige Beweglichkeit und Kommunikation treiben dich an; Wissen ist dein Lebenselixier."
+    },
+    {
+      "name": "Krebs",
+      "deutung": "Fürsorge, Empathie und ein starker Bezug zu Heimat prägen deinen Selbstkern."
+    },
+    {
+      "name": "Löwe",
+      "deutung": "Selbstausdruck, Kreativität und Großzügigkeit stehen im Zentrum deiner Lebensenergie."
+    },
+    {
+      "name": "Jungfrau",
+      "deutung": "Analyse, Präzision und der Wunsch, nützlich zu sein, formen deine Identität."
+    },
+    {
+      "name": "Waage",
+      "deutung": "Harmonie, Ästhetik und faire Beziehungen sind dein zentraler Lebensmotor."
+    },
+    {
+      "name": "Skorpion",
+      "deutung": "Intensität, Tiefe und der Drang, hinter die Oberfläche zu schauen, bestimmen deinen Kern."
+    },
+    {
+      "name": "Schütze",
+      "deutung": "Wachstum, Sinnsuche und Abenteuerlust bilden das Herz deiner Persönlichkeit."
+    },
+    {
+      "name": "Steinbock",
+      "deutung": "Disziplin, Verantwortung und das Streben nach langfristigem Erfolg kennzeichnen deinen Wesenskern."
+    },
+    {
+      "name": "Wassermann",
+      "deutung": "Unabhängigkeit, Originalität und der Blick in die Zukunft treiben dich an."
+    },
+    {
+      "name": "Fische",
+      "deutung": "Mitgefühl, Fantasie und der Wunsch, Grenzen zu lösen, formen deinen Lebensweg."
+    }
+  ],
+  "Mond": [
+    {
+      "name": "Widder",
+      "deutung": "Emotionen treten impulsiv hervor – du brauchst Bewegung und unmittelbaren Ausdruck deiner Gefühle."
+    },
+    {
+      "name": "Stier",
+      "deutung": "Innere Ruhe entsteht, wenn du Beständigkeit spürst und deine Sinne verwöhnen kannst."
+    },
+    {
+      "name": "Zwillinge",
+      "deutung": "Emotional brauchst du Austausch und Abwechslung – reden, schreiben, fragen beruhigt dein Gemüt."
+    },
+    {
+      "name": "Krebs",
+      "deutung": "Gefühle sind tief und wechselhaft; Geborgenheit und vertraute Menschen nähren deine Seele."
+    },
+    {
+      "name": "Löwe",
+      "deutung": "Herz und Gefühle wollen strahlen; du brauchst Anerkennung und spielerische Freude, um dich sicher zu fühlen."
+    },
+    {
+      "name": "Jungfrau",
+      "deutung": "Emotional suchst du Ordnung und Klarheit; kleine Rituale und praktische Hilfe beruhigen dich."
+    },
+    {
+      "name": "Waage",
+      "deutung": "Dein Herz sehnt sich nach Balance und schönem Miteinander – disharmonische Umgebungen verunsichern dich."
+    },
+    {
+      "name": "Skorpion",
+      "deutung": "Gefühle sind leidenschaftlich und geheimnisvoll; du brauchst absolute Loyalität, um dich sicher zu öffnen."
+    },
+    {
+      "name": "Schütze",
+      "deutung": "Innerlich brauchst du Freiheit, Weite und inspirierende Horizonte, um emotional aufzutanken."
+    },
+    {
+      "name": "Steinbock",
+      "deutung": "Sicherheit entsteht durch Struktur und erreichbare Ziele; Emotionen werden nüchtern geprüft."
+    },
+    {
+      "name": "Wassermann",
+      "deutung": "Du fühlst dich wohl, wenn du frei denken und anders sein darfst; emotionale Distanz schützt deine Individualität."
+    },
+    {
+      "name": "Fische",
+      "deutung": "Emotionen sind fließend; Rückzug, Kunst oder Spiritualität nähren deine Seele."
+    }
+  ],
+  "Aszendent": [
+    {
+      "name": "Widder",
+      "deutung": "Du wirkst dynamisch, entschlossen und ergreifst gern die Initiative, sobald du einen Raum betrittst."
+    },
+    {
+      "name": "Stier",
+      "deutung": "Andere erleben dich als ruhig, bodenständig und verlässlich – man spürt deinen inneren Halt."
+    },
+    {
+      "name": "Zwillinge",
+      "deutung": "Du trittst lebhaft, wendig und kontaktfreudig auf, immer bereit für ein spontanes Gespräch."
+    },
+    {
+      "name": "Krebs",
+      "deutung": "Du erscheinst warmherzig, vorsichtig und empfänglich – man spürt sofort dein Mitgefühl."
+    },
+    {
+      "name": "Löwe",
+      "deutung": "Du wirkst selbstbewusst, charismatisch und bringst sofort Farbe und Leben in jede Umgebung."
+    },
+    {
+      "name": "Jungfrau",
+      "deutung": "Du trittst sachlich, aufmerksam und bescheiden auf – Details entgehen dir selten."
+    },
+    {
+      "name": "Waage",
+      "deutung": "Andere erleben dich als charmant, diplomatisch und stilvoll; du strahlst kooperative Eleganz aus."
+    },
+    {
+      "name": "Skorpion",
+      "deutung": "Du wirkst magnetisch, durchdringend und reserviert – man spürt sofort deine Tiefe."
+    },
+    {
+      "name": "Schütze",
+      "deutung": "Du erscheinst offen, optimistisch und begeisternd – dein Lachen steckt an."
+    },
+    {
+      "name": "Steinbock",
+      "deutung": "Du trittst reserviert, zielorientiert und zuverlässig auf – man spürt deine Ernsthaftigkeit."
+    },
+    {
+      "name": "Wassermann",
+      "deutung": "Du wirkst unkonventionell, wach und erfrischend; du bringst neue Ideen in jede Begegnung."
+    },
+    {
+      "name": "Fische",
+      "deutung": "Du erscheinst sanft, intuitiv und etwas geheimnisvoll – man spürt dein weites Herz."
+    }
+  ]
+}

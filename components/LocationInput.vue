@@ -1,7 +1,7 @@
 <template>
     <div>
     <label for="birthlocation" class="block text-sm font-medium leading-6 text-gray-900">Geburtsort</label>
-      <Combobox v-model="selected" required>
+      <Combobox v-model="selected" class="z-10 border" required>
         <div class="relative mt-1">
           <div
             class="relative w-full cursor-default overflow-hidden rounded-lg text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm"
@@ -30,7 +30,7 @@
             >
               <div
                 v-if="LocationPredictions.length === 0 && query !== ''"
-                class="relative cursor-default select-none px-4 py-2 text-gray-700"
+                class="relative cursor-default select-none px-4 py-2 text-purple-700"
               >
                 Nothing found.
               </div>
@@ -58,7 +58,7 @@
                   <span
                     v-if="selected"
                     class="absolute inset-y-0 left-0 flex items-center pl-3"
-                    :class="{ 'text-white': active, 'text-teal-600': !active }"
+                    :class="{ 'text-white': active, 'text-purple-600': !active }"
                   >
                     <CheckIcon class="h-5 w-5" aria-hidden="true" />
                   </span>

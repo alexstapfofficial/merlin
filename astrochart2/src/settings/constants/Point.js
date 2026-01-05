@@ -4,7 +4,7 @@
 * @type {Boolean}
 * @default true
 */
-export const POINT_PROPERTIES_SHOW = true
+export const POINT_PROPERTIES_SHOW = false
 
 /*
 * Text size of Point description - angle in sign, dignities, retrograde
