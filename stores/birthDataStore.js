@@ -63,7 +63,9 @@ export const useBirthDataStore = defineStore("birthdata", {
           birthlocation: this.coordinates
         },
       });
+      console.log('Fetched horoscope data:', data);
       this.horoscope = data.horoscope;
+      console.log('Store horoscope after set:', this.horoscope);
     }
   },
 });

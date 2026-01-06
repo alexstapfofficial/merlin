@@ -53,6 +53,12 @@ export const useTranslateZodiac = () => {
         return "Y";
       case "Pluto":
         return "Z";
+      case "Chiron":
+        return "q"; // Chiron Symbol
+      case "NNode":
+        return "N"; // North Node Symbol
+      case "Lilith":
+        return "l"; // Lilith Symbol
     }
   };
 
@@ -78,6 +84,12 @@ export const useTranslateZodiac = () => {
         return $t("planets.neptune");
       case "Pluto":
         return $t("planets.pluto");
+      case "Chiron":
+        return $t("planets.chiron");
+      case "NNode":
+        return $t("planets.nnode");
+      case "Lilith":
+        return $t("planets.lilith");
     }
   };
 

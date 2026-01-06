@@ -1,5 +1,4 @@
-import { Horoscope } from "~/horoscope";
-
+import { calculateHoroscope } from "../utils/horoscope.js";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
@@ -9,9 +8,18 @@ export default defineEventHandler(async (event) => {
     const birthDay = body.birthdate.birthday;
     const birthHour = body.birthtime.birthhour;
     const birthMinute = body.birthtime.birthminute;
-    const birthLatitude = body.birthlocation[1];   // Latitude for Erlenbach am Main
-    const birthLongitude = body.birthlocation[0]; 
-    const horoscope = new Horoscope(birthYear, birthMonth, birthDay, birthHour, birthMinute, birthLatitude, birthLongitude);
+    const birthLatitude = body.birthlocation[1];
+    const birthLongitude = body.birthlocation[0];
 
-  return {horoscope};
+    const horoscope = calculateHoroscope(
+        birthYear,
+        birthMonth,
+        birthDay,
+        birthHour,
+        birthMinute,
+        birthLatitude,
+        birthLongitude
+    );
+
+    return { horoscope };
 })

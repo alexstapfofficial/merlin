@@ -1,14 +1,16 @@
 <template>
     <div class="font-mono">
         <table class="font-mono py-4">
-            <tr>
-                <td class="text-gray-600 px-4"> Dominantes Zeichen:</td>
-                <td>{{ horoscope.overview.dominant_sign }}</td>
-            </tr>
-            <tr>
-                <td class="text-gray-600 px-4">Dominater Planet:</td>
-                <td>{{ horoscope.overview.dominant_planet }}</td>
-            </tr>
+            <tbody>
+                <tr>
+                    <td class="text-gray-600 px-4"> Dominantes Zeichen:</td>
+                    <td>{{ horoscope.overview.dominant_sign }}</td>
+                </tr>
+                <tr>
+                    <td class="text-gray-600 px-4">Dominater Planet:</td>
+                    <td>{{ horoscope.overview.dominant_planet }}</td>
+                </tr>
+            </tbody>
         </table>
 
         <p class="p-4">

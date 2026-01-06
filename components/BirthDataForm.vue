@@ -15,8 +15,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useBirthDataStore } from '~/stores/birthDataStore';
+import { useProfile } from '~/composables/useProfile';
 
 const name = ref('');
 const birthdate = ref({});
@@ -25,19 +24,16 @@ const coordinates = ref([]);
 
 const pending = ref(false);
 
-const submit = async () => {
-    useBirthDataStore().setName(name.value);   
-    useBirthDataStore().setBirthdata(birthdate.value, birthtime.value, coordinates.value);
-    try {
-        pending.value = true;
-        await useBirthDataStore().fetchHoroscope();
-    } catch (error) {
-        console.error('Error fetching horoscope:', error);
-        pending.value = false;
-    } finally {
-        pending.value = false;
-    }
+const { generateHoroscopeWithLoading } = useProfile();
 
-    await navigateTo('/personality');
+const submit = async () => {
+    const profile = {
+        name: name.value,
+        birthdate: birthdate.value,
+        birthtime: birthtime.value,
+        coordinates: coordinates.value
+    };
+
+    await generateHoroscopeWithLoading(profile, pending);
 };
 </script>

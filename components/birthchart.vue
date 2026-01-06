@@ -5,42 +5,26 @@
 </template>
 
 <script setup>
-import { Universe } from "../astrochart2/src/index"
 import { useBirthDataStore } from "~/stores/birthDataStore";
+import { useBirthChart } from "~/composables/useBirthChart";
 
 const birthDataStore = useBirthDataStore();
 const { horoscope } = storeToRefs(birthDataStore);
 
+// Use the birth chart composable
+const { createReactiveChart } = useBirthChart();
+const { error } = createReactiveChart('paper', horoscope);
 
-onMounted(() => {
-  const chart = new Universe('paper').radix().setData(chartData.value)
-})
-
-
-const chartData = computed(() => {
-  return {
-    points: planetaryPositions.value,
-    cusps: houses.value,
-    midheaven: horoscope.value.houses.Midheaven
+// Watch for errors
+watch(error, (newError) => {
+  if (newError) {
+    console.error('Chart error:', newError);
   }
-});
-
-const planetaryPositions = computed(() => {
-  return horoscope.value.planetaryPositions.map((planet) => ({
-    name: planet.name,
-    angle: planet.angle
-  }))
-});
-
-const houses = computed(() => {
-  return horoscope.value.houses.Houses.map((house) => ({
-    angle: house.angle
-  }))
 });
 
 const { downloadAsPng } = useDownloadImage();
 
-const downloadBirthChartAsPng=()=>{
+const downloadBirthChartAsPng = () => {
   downloadAsPng(document.getElementById('paper'), 'birth-chart');
 };
 </script>

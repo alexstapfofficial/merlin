@@ -147,31 +147,15 @@ const finalRows = computed(() => {
 });
 
 const { downloadAsPng } = useDownloadImage();
+const { downloadAsMarkdown } = useDownloadMarkdown();
 
 const downloadPlanetTableAsPng=()=>{
   downloadAsPng(document.getElementById('astro-table'), 'planet-table');
 };
 
 
-//CHATGPT-Test
-const horoscopeText = ref('')
 
-const generateHoroscope = async () => {
-  const response = await $fetch('/api/chat', {
-    method: 'POST',
-    body: {
-      birthdate: birthdate.value,
-      birthtime: birthtime.value,
-      birthlocation: coordinates.value,
-      planets: birthChart.value,
-      aspects: horoscope.value?.aspects,
-      houses: horoscope.value?.houses.Houses,
-      ascendant: horoscope.value?.houses.Houses[0].zodiacSign,
-      mediumcoeli: horoscope.value?.houses.Houses[9].zodiacSign
-    },
-  });
-  horoscopeText.value = response.horoscope;
-};
+
 
 
 </script>

@@ -17,7 +17,7 @@
                 </div>
                 <div class="relative">
                     <Birthchart class="w-full h-auto px-16 pt-8"/>
-                    <img class="absolute top-1/2 left-1/2 w-72 h-72 -translate-x-1/2 -translate-y-1/2" :src="zodiacImagePath"/>
+                    <img class="absolute top-1/2 left-1/2 w-48 h-48 -translate-x-1/2 -translate-y-1/2" :src="zodiacImagePath"/>
                 </div>
                 <div class="flex items-start justify-between">
                     <Planets />
@@ -33,7 +33,7 @@ import LocaleSwitcher from '~/components/localeSwitcher.vue';
 import { useBirthDataStore } from '~/stores/birthDataStore';
 
 const birthDataStore = useBirthDataStore();
-const { name, birthdate, birthtime, coordinates, horoscope } = storeToRefs(birthDataStore);
+const { name, coordinates, horoscope } = storeToRefs(birthDataStore);
 
 const ascendant = computed(()=>{
     if(horoscope.value.houses) return horoscope.value.houses.Houses[0].zodiacSign

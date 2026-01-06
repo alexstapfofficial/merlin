@@ -62,6 +62,9 @@ const planets = [
   { name: "Uranus", symbol: "X" },
   { name: "Neptune", symbol: "Y" },
   { name: "Pluto", symbol: "Z" },
+  { name: "Chiron", symbol: "q" },
+  { name: "NNode", symbol: "N" },
+  { name: "Lilith", symbol: "l" },
 ];
 
 // Hilfsfunktion: Aspekt-Symbol

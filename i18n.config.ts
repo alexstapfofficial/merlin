@@ -30,7 +30,10 @@ export default defineI18nConfig(() => ({
           saturn: 'Saturn',
           uranus: 'Uranus',
           neptune: 'Neptun',
-          pluto: 'Pluto'
+          pluto: 'Pluto',
+          chiron: 'Chiron',
+          nnode: 'Mondknoten',
+          lilith: 'Lilith'
         }
       },
       en: {
@@ -53,13 +56,17 @@ export default defineI18nConfig(() => ({
           sun: 'Sun',
           moon: 'Moon',
           mercury: 'Mercury',
-          venus: 'Venus', 
+          venus: 'Venus',
           mars: 'Mars',
           jupiter: 'Jupiter',
           saturn: 'Saturn',
           uranus: 'Uranus',
           neptune: 'Neptune',
-          pluto: 'Pluto'
+          pluto: 'Pluto',
+          chiron: 'Chiron',
+          nnode: 'North Node',
+          lilith: 'Lilith'
+        }
       },
       fr: {
         zodiacs:{
@@ -87,7 +94,11 @@ export default defineI18nConfig(() => ({
           saturn: 'Saturne',
           uranus: 'Uranus',
           neptune: 'Neptune',
-          pluto: 'Pluton'
+          pluto: 'Pluton',
+          chiron: 'Chiron',
+          nnode: 'Nœud Nord',
+          lilith: 'Lilith'
+        }
       }
     }
-  }}}));
+  }));

@@ -1,96 +1,96 @@
-import axios from 'axios';
+import Anthropic from '@anthropic-ai/sdk';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event); // Eingabedaten aus der Anfrage
-  
-  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-  // Das JSON-Template für die astrologische Analyse
-  const horoscopeTemplate = {
-    overview: {
-      summary: "",
-      dominant_sign: "",
-      dominant_planet: "",
-    },
-    houses: [],
-    planets: [],
-    aspects: [],
-    recommendations: [],
-  };
+  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+
+  if (!ANTHROPIC_API_KEY) {
+    return {
+      error: 'ANTHROPIC_API_KEY ist nicht konfiguriert',
+    };
+  }
+
+  const anthropic = new Anthropic({
+    apiKey: ANTHROPIC_API_KEY,
+  });
 
   try {
-    const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
-      {
-        model: 'gpt-4',
-        messages: [
-          {
-            role: 'system',
-            content: `Du bist ein erfahrener Astrologe. Schreibe eine detaillierte und strukturierte astrologische Analyse in JSON-Format. Halte dich an das folgende Schema:
+    const systemPrompt = `Du bist ein erfahrener Astrologe. Schreibe eine detaillierte und strukturierte astrologische Analyse im Markdown-Format.
 
-            ${JSON.stringify(horoscopeTemplate, null, 2)}
+Beachte dabei:
+- Gliedere die Analyse in übersichtliche Abschnitte mit Überschriften
+- Beginne mit einer Zusammenfassung (Overview)
+- Analysiere dann die wichtigsten Planeten und ihre Positionen
+- Beschreibe die Bedeutung der Häuser
+- Erkläre die wichtigsten Aspekte zwischen den Planeten
+- Schließe mit Empfehlungen ab
+- Jede Interpretation soll detailliert und verständlich sein
+- Schreibe die Analyse auf Deutsch
+- Verwende Markdown-Formatierung (## für Überschriften, **fett** für Betonung, etc.)`;
 
-            Beachte dabei:
-            - Jede Interpretation zu einem Haus und zu einem Planeten soll genau 700 Zeichen (inklusive Leerzeichen) umfassen.
-            - Schreibe die Analyse auf Deutsch.
-            - Fülle jedes Feld mit klaren und präzisen Interpretationen aus.
-            `,
-          },
-          {
-            role: 'user',
-            content: `Hier sind die astrologischen Daten:
-            Geburtstag: ${body.birthdate}
-            Geburtszeit: ${body.birthtime}
-            Geburtsort: ${body.birthlocation}
+    const userPrompt = `Hier sind die astrologischen Daten:
 
-            Aszendent: ${body.ascendant}
-            Medium Coeli: ${body.mediumcoeli}
+Geburtstag: ${body.birthdate}
+Geburtszeit: ${body.birthtime}
+Geburtsort: ${body.birthlocation}
 
-            Planeten und ihre Position:
-            ${body.planets
-              .map(
-                (planet) =>
-                  `${planet.planet} steht im Zeichen ${planet.sign} im ${planet.house}.Haus auf ${planet.degree} Grad.`
-              )
-              .join('\n')}
+Aszendent: ${body.ascendant || 'Nicht verfügbar'}
+Medium Coeli: ${body.mediumcoeli || 'Nicht verfügbar'}
 
-            Hausspitzen und ihre Zeichen:
-            ${body.houses
-              .map(
-                (house) =>
-                  `${house.houseNumber}.Hausspitze steht im Zeichen ${house.zodiacSign} auf ${house.angle} Grad.`
-              )
-              .join('\n')}
+Planeten und ihre Position:
+${body.planets && Array.isArray(body.planets)
+  ? body.planets
+      .map(
+        (planet) =>
+          `${planet.name} steht im Zeichen ${planet.zodiacSign} auf ${planet.angle.toFixed(2)} Grad.`
+      )
+      .join('\n')
+  : 'Keine Planetendaten verfügbar'}
 
-            Aspekte zwischen den Planeten:
-            ${body.aspects
-              .map(
-                (aspect) =>
-                  `${aspect.planets[0]} formt eine ${aspect.aspect} mit ${aspect.planets[1]} mit einem Orbis von ${aspect.degree} Grad.`
-              )
-              .join('\n')}
-            `,
-          },
-        ],
-        max_tokens: 3000,
-        temperature: 0.7,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
+Hausspitzen und ihre Zeichen:
+${body.houses && Array.isArray(body.houses)
+  ? body.houses
+      .map(
+        (house) =>
+          `${house.houseNumber}.Hausspitze steht im Zeichen ${house.zodiacSign} auf ${house.angle.toFixed(2)} Grad.`
+      )
+      .join('\n')
+  : 'Keine Häuserdaten verfügbar'}
+
+Aspekte zwischen den Planeten:
+${body.aspects && Array.isArray(body.aspects)
+  ? body.aspects
+      .map(
+        (aspect) =>
+          `${aspect.planets[0]} formt eine ${aspect.aspect} mit ${aspect.planets[1]} mit einem Orbis von ${aspect.exactAngle.toFixed(2)} Grad.`
+      )
+      .join('\n')
+  : 'Keine Aspektdaten verfügbar'}
+
+Bitte erstelle eine umfassende astrologische Analyse dieser Daten im Markdown-Format.`;
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4096,
+      messages: [
+        {
+          role: 'user',
+          content: userPrompt,
         },
-      }
-    );
+      ],
+      system: systemPrompt,
+    });
 
-    // JSON-Antwort von OpenAI
-    const generatedHoroscope = JSON.parse(response.data.choices[0].message.content);
+    // Extrahiere den Text aus der Claude-Antwort
+    const generatedHoroscope = message.content[0].text;
 
     // Rückgabe des generierten Horoskops
     return { horoscope: generatedHoroscope };
   } catch (error) {
+    console.error('Claude API Error:', error);
     return {
-      error: error.response?.data || error.message,
+      error: error.message || 'Fehler beim Generieren des Horoskops',
     };
   }
 });
