@@ -3,13 +3,10 @@ import NavigationHeader from './components/NavigationHeader.vue';
 </script>
 
 <template>
-  <NavigationHeader />
-
-  <UMain>
+  <div>
+    <NavigationHeader />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-  </UMain>
-
-  <UFooter />
+  </div>
 </template>

@@ -2,7 +2,6 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxt/ui', '@nuxt/fonts', '@pinia/nuxt', '@nuxtjs/i18n'],
-  extends: ['@nuxt/ui-pro'],
   i18n: {
     vueI18n: './i18n.config.ts' // if you are using custom path, default 
   },
@@ -28,5 +27,5 @@ export default defineNuxtConfig({
     }
   },
 
-  compatibilityDate: '2025-02-19'
+  compatibilityDate: '2024-01-07'
 })

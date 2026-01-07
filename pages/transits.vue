@@ -6,11 +6,27 @@
             {{ error }}
         </div>
 
-        <div v-if="!birthDataStore.horoscope" class="info-message">
-            Bitte berechnen Sie zuerst Ihr Geburtshoroskop auf der Startseite.
+        <!-- Profile Selection -->
+        <div class="profile-selector">
+            <label for="profile-select">Profil auswählen:</label>
+            <USelect
+                v-model="selectedProfileId"
+                :options="profileOptions"
+                placeholder="Wähle ein Profil"
+                size="lg"
+                @change="onProfileChange"
+            />
+            <NuxtLink to="/" v-if="profileOptions.length === 0">
+                <UButton size="sm" variant="outline">Profile erstellen</UButton>
+            </NuxtLink>
         </div>
 
-        <div v-else class="transits-content">
+        <div v-if="selectedProfile" class="transits-content">
+            <div class="selected-profile-info">
+                <h3>{{ selectedProfile.name }}</h3>
+                <p>{{ formatBirthDate(selectedProfile.birthdate) }} um {{ formatBirthTime(selectedProfile.birthtime) }} Uhr</p>
+            </div>
+
             <div class="date-selector">
                 <label for="transit-date">Datum für Transite:</label>
                 <input
@@ -79,13 +95,15 @@
 </template>
 
 <script setup>
-import { useBirthDataStore } from '~/stores/birthDataStore';
+import { useProfilesStore } from '~/stores/profilesStore';
 import { useTransits } from '~/composables/useTransits';
 import { useTranslateZodiac } from '~/composables/translateZodiac';
+import { useProfile } from '~/composables/useProfile';
 
-const birthDataStore = useBirthDataStore();
+const profilesStore = useProfilesStore();
 const { calculateTransits } = useTransits();
 const { translatePlanetName, translateZodiacName } = useTranslateZodiac();
+const { formatBirthDate, formatBirthTime } = useProfile();
 
 const transits = ref(null);
 const loading = ref(false);
@@ -93,6 +111,29 @@ const error = ref('');
 const selectedDate = ref(new Date().toISOString().split('T')[0]);
 const interpretation = ref('');
 const interpretationLoading = ref(false);
+const selectedProfileId = ref(null);
+const selectedProfile = ref(null);
+
+// Compute profile options for the select dropdown
+const profileOptions = computed(() => {
+    const options = [];
+
+    if (profilesStore.myProfile) {
+        options.push({
+            value: 'my-profile',
+            label: `${profilesStore.myProfile.name} (Mein Profil)`
+        });
+    }
+
+    profilesStore.friendProfiles.forEach(profile => {
+        options.push({
+            value: profile.id,
+            label: profile.name
+        });
+    });
+
+    return options;
+});
 
 const formattedDate = computed(() => {
     const date = new Date(selectedDate.value);
@@ -104,22 +145,36 @@ const formattedDate = computed(() => {
     });
 });
 
+const onProfileChange = () => {
+    if (selectedProfileId.value === 'my-profile') {
+        selectedProfile.value = profilesStore.myProfile;
+    } else {
+        selectedProfile.value = profilesStore.friendProfiles.find(
+            p => p.id === selectedProfileId.value
+        );
+    }
+
+    if (selectedProfile.value) {
+        loadTransits();
+    }
+};
+
 const loadTransits = async () => {
-    if (!birthDataStore.horoscope) {
-        error.value = 'Bitte berechnen Sie zuerst Ihr Geburtshoroskop.';
+    if (!selectedProfile.value) {
+        error.value = 'Bitte wählen Sie ein Profil aus.';
         return;
     }
 
     loading.value = true;
     error.value = '';
-    interpretation.value = ''; // Reset interpretation when loading new transits
+    interpretation.value = '';
 
     try {
         const transitDate = new Date(selectedDate.value);
         const result = await calculateTransits({
-            birthdate: birthDataStore.birthdate,
-            birthtime: birthDataStore.birthtime,
-            coordinates: birthDataStore.coordinates
+            birthdate: selectedProfile.value.birthdate,
+            birthtime: selectedProfile.value.birthtime,
+            coordinates: selectedProfile.value.coordinates
         }, transitDate);
 
         transits.value = result.transits;
@@ -196,9 +251,14 @@ const getAspectName = (aspect) => {
     return names[aspect] || aspect;
 };
 
-// Load transits on mount if birth data is available
+// Load profiles and auto-select if available
 onMounted(() => {
-    if (birthDataStore.horoscope) {
+    profilesStore.loadFromLocalStorage();
+
+    // Auto-select my profile if available
+    if (profilesStore.myProfile) {
+        selectedProfileId.value = 'my-profile';
+        selectedProfile.value = profilesStore.myProfile;
         loadTransits();
     }
 });
@@ -232,13 +292,42 @@ h2 {
     margin-bottom: 1rem;
 }
 
-.info-message {
-    background-color: #e3f2fd;
-    border: 1px solid #90caf9;
-    color: #1976d2;
+.profile-selector {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.profile-selector label {
+    font-weight: 600;
+    color: white;
+    font-size: 1.1rem;
+    min-width: fit-content;
+}
+
+.selected-profile-info {
+    background-color: #f0f7ff;
+    border: 2px solid #667eea;
+    border-radius: 8px;
     padding: 1rem;
-    border-radius: 4px;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.selected-profile-info h3 {
+    margin: 0 0 0.5rem 0;
+    color: #667eea;
+    font-size: 1.3rem;
+}
+
+.selected-profile-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.95rem;
 }
 
 .date-selector {

@@ -19,6 +19,7 @@ export default defineEventHandler(async (event) => {
     const systemPrompt = `Du bist ein erfahrener Astrologe, spezialisiert auf Transit-Deutungen.
 
 Schreibe eine prägnante und hilfreiche Interpretation der aktuellen Transite im Markdown-Format.
+Wähle einen mystischen und nicht fachlichen Spachstil, das Horoskop soll jeder verstehen können.
 
 Beachte dabei:
 - Beginne mit einer kurzen Zusammenfassung der wichtigsten Transite des Tages

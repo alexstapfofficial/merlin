@@ -1,7 +1,4 @@
-import { useI18n } from "vue-i18n";
-
 export const useTranslateZodiac = () => {
-    const { t: $t } = useI18n();
   const getZodiacSymbol = (sign) => {
     switch (sign) {
       case "Aries":
@@ -63,63 +60,40 @@ export const useTranslateZodiac = () => {
   };
 
   const translatePlanetName = (planet) => {
-    switch (planet) {
-      case "Moon":
-        return $t("planets.moon");
-      case "Mercury":
-        return $t("planets.mercury");
-      case "Venus":
-        return $t("planets.venus");
-      case "Sun":
-        return $t("planets.sun");
-      case "Mars":
-        return $t("planets.mars");
-      case "Jupiter":
-        return $t("planets.jupiter");
-      case "Saturn":
-        return $t("planets.saturn");
-      case "Uranus":
-        return $t("planets.uranus");
-      case "Neptune":
-        return $t("planets.neptune");
-      case "Pluto":
-        return $t("planets.pluto");
-      case "Chiron":
-        return $t("planets.chiron");
-      case "NNode":
-        return $t("planets.nnode");
-      case "Lilith":
-        return $t("planets.lilith");
-    }
+    const translations = {
+      "Moon": "Mond",
+      "Mercury": "Merkur",
+      "Venus": "Venus",
+      "Sun": "Sonne",
+      "Mars": "Mars",
+      "Jupiter": "Jupiter",
+      "Saturn": "Saturn",
+      "Uranus": "Uranus",
+      "Neptune": "Neptun",
+      "Pluto": "Pluto",
+      "Chiron": "Chiron",
+      "NNode": "Mondknoten",
+      "Lilith": "Lilith"
+    };
+    return translations[planet] || planet;
   };
 
   const translateZodiacName = (zodiac) => {
-    switch (zodiac) {
-      case "Aries":
-        return $t("zodiacs.aries");
-      case "Taurus":
-        return $t("zodiacs.taurus");
-      case "Gemini":
-        return $t("zodiacs.gemini");
-      case "Cancer":
-        return $t("zodiacs.cancer");
-      case "Leo":
-        return $t("zodiacs.leo");
-      case "Virgo":
-        return $t("zodiacs.virgo");
-      case "Libra":
-        return $t("zodiacs.libra");
-      case "Scorpio":
-        return $t("zodiacs.scorpio");
-      case "Sagittarius":
-        return $t("zodiacs.sagittarius");
-      case "Capricorn":
-        return $t("zodiacs.capricorn");
-      case "Aquarius":
-        return $t("zodiacs.aquarius");
-      case "Pisces":
-        return $t("zodiacs.pisces");
-    }
+    const translations = {
+      "Aries": "Widder",
+      "Taurus": "Stier",
+      "Gemini": "Zwillinge",
+      "Cancer": "Krebs",
+      "Leo": "Löwe",
+      "Virgo": "Jungfrau",
+      "Libra": "Waage",
+      "Scorpio": "Skorpion",
+      "Sagittarius": "Schütze",
+      "Capricorn": "Steinbock",
+      "Aquarius": "Wassermann",
+      "Pisces": "Fische"
+    };
+    return translations[zodiac] || zodiac;
   };
 
   return {

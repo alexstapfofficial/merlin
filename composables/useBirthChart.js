@@ -6,6 +6,59 @@ import { Universe } from "../astrochart2/src/index";
  */
 export const useBirthChart = () => {
   /**
+   * Calculate birth chart from profile data using API
+   */
+  const calculateBirthChart = async (profile) => {
+    if (!profile?.birthdate || !profile?.birthtime || !profile?.coordinates) {
+      throw new Error('Invalid profile data');
+    }
+
+    try {
+      // Call the horoscope API with the correct format
+      const response = await $fetch('/api/horoscope', {
+        method: 'POST',
+        body: {
+          birthdate: {
+            birthday: profile.birthdate.birthday,
+            birthmonth: profile.birthdate.birthmonth,
+            birthyear: profile.birthdate.birthyear
+          },
+          birthtime: {
+            birthhour: profile.birthtime.birthhour,
+            birthminute: profile.birthtime.birthminute
+          },
+          birthlocation: [
+            profile.coordinates[0],
+            profile.coordinates[1]
+          ]
+        }
+      });
+
+      // Extract horoscope from response
+      const horoscope = response.horoscope;
+
+      // Return the chart data with profile metadata
+      return {
+        id: `chart-${Date.now()}`,
+        profile_id: profile.id,
+        year: profile.birthdate.birthyear,
+        month: profile.birthdate.birthmonth,
+        day: profile.birthdate.birthday,
+        hour: profile.birthtime.birthhour,
+        minute: profile.birthtime.birthminute,
+        latitude: profile.coordinates[1],
+        longitude: profile.coordinates[0],
+        planetaryPositions: horoscope.planetaryPositions,
+        houses: horoscope.houses,
+        aspects: horoscope.aspects,
+        calculated_at: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('Error calculating birth chart:', error);
+      throw error;
+    }
+  };
+  /**
    * Transform horoscope data to chart format
    */
   const transformToChartData = (horoscope) => {
@@ -150,6 +203,7 @@ export const useBirthChart = () => {
   };
 
   return {
+    calculateBirthChart,
     transformToChartData,
     validateChartData,
     renderChart,
