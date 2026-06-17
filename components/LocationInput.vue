@@ -1,21 +1,21 @@
 <template>
     <div>
-    <label for="birthlocation" class="block text-sm font-medium leading-6 text-gray-900">Geburtsort</label>
-      <Combobox v-model="selected" class="z-10 border" required>
+    <label for="birthlocation" class="block text-sm font-medium leading-6 text-beige-950">Geburtsort</label>
+      <Combobox v-model="selected" class="z-10" required>
         <div class="relative mt-1">
           <div
-            class="relative w-full cursor-default overflow-hidden rounded-lg text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm"
+            class="relative w-full cursor-default overflow-hidden rounded-lg border border-beige-400 bg-beige-50 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-beige-600 focus-visible:ring-offset-2 sm:text-sm"
           >
             <ComboboxInput
-              class="w-full placeholder-black border-none py-2 pl-3 pr-10 text-xs leading-5 text-gray-900 focus:ring-0"
-              :placeholder="selected.name"
-              @change="query = $event.target.value"
+              class="w-full bg-transparent border-none py-2 pl-3 pr-10 text-sm leading-5 text-beige-950 placeholder-beige-700 focus:ring-0"
+              :placeholder="selected.name || 'Stadt eingeben...'"
+              @change="handleInputChange"
             />
             <ComboboxButton
               class="absolute inset-y-0 right-0 flex items-center pr-2"
             >
               <ChevronUpDownIcon
-                class="h-5 w-5 text-gray-400"
+                class="h-5 w-5 text-beige-700"
                 aria-hidden="true"
               />
             </ComboboxButton>
@@ -26,18 +26,25 @@
             leaveTo="opacity-0"
           >
             <ComboboxOptions
-              class="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm"
+              class="absolute mt-1 max-h-60 w-full overflow-auto rounded-lg bg-beige-50 py-1 text-base shadow-lg border border-beige-400 focus:outline-none sm:text-sm"
             >
               <div
-                v-if="LocationPredictions.length === 0 && query !== ''"
-                class="relative cursor-default select-none px-4 py-2 text-purple-700"
+                v-if="locations.length === 0 && query !== '' && !loading"
+                class="relative cursor-default select-none px-4 py-2 text-beige-700"
               >
-                Nothing found.
+                Keine Ergebnisse gefunden.
               </div>
-  
+
+              <div
+                v-if="loading"
+                class="relative cursor-default select-none px-4 py-2 text-beige-700"
+              >
+                Suche läuft...
+              </div>
+
               <ComboboxOption
-              v-for="(location, i) in locations"
-              :key = "i"
+              v-for="location in locations"
+              :key="location.placeId"
               :value="location"
                 as="template"
                 v-slot="{ selected, active }"
@@ -45,8 +52,8 @@
                 <li
                   class="relative cursor-default select-none py-2 pl-10 pr-4"
                   :class="{
-                    'bg-gray-600 text-white': active,
-                    'text-gray-900': !active,
+                    'bg-beige-400 text-beige-950': active,
+                    'text-beige-950': !active,
                   }"
                 >
                   <span
@@ -58,7 +65,7 @@
                   <span
                     v-if="selected"
                     class="absolute inset-y-0 left-0 flex items-center pl-3"
-                    :class="{ 'text-white': active, 'text-purple-600': !active }"
+                    :class="{ 'text-beige-950': active, 'text-beige-700': !active }"
                   >
                     <CheckIcon class="h-5 w-5" aria-hidden="true" />
                   </span>
@@ -70,9 +77,9 @@
       </Combobox>
     </div>
   </template>
-  
+
   <script setup>
-  import { ref, computed } from 'vue'
+  import { ref, watch, onMounted } from 'vue'
   import {
     Combobox,
     ComboboxInput,
@@ -82,29 +89,85 @@
     TransitionRoot,
   } from '@headlessui/vue'
   import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
-  
+
+  const props = defineProps({
+    initialCoordinates: {
+      type: Array,
+      default: null
+    }
+  });
+
   const emit = defineEmits(['newCoordinates'])
 
-    const selected = ref('')
-    const query = ref('')
-    const locations = ref([])
+  const selected = ref({ name: '', placeId: '', coordinates: null })
+  const query = ref('')
+  const locations = ref([])
+  const loading = ref(false)
 
-
-    watch(selected,()=>{
-        emit('newCoordinates', selected.value.coordinates)
-    })
-
-    const LocationPredictions = computed(async()=>{
-      const data = await $fetch(`https://api.geoapify.com/v1/geocode/autocomplete?text=${query.value}&apiKey=d71d73e8ae544f629a808ca1be6a2138`, {method: 'GET'});
-      locations.value = data.features;
-      locations.value = locations.value.map((location)=>({
-        name: LocationName(location),
-        coordinates: location.geometry.coordinates
-      }));
-    })
-  
-    //Hilfsfunktion der 
-    const LocationName = (location)=> {
-        return `${location.properties.address_line1}, ${location.properties.address_line2}`
+  // Initialize with existing coordinates if provided
+  onMounted(() => {
+    if (props.initialCoordinates && props.initialCoordinates.length === 2) {
+      // Display coordinates as placeholder text
+      const [lng, lat] = props.initialCoordinates;
+      selected.value = {
+        name: `${lat.toFixed(4)}°N, ${lng.toFixed(4)}°E`,
+        placeId: '',
+        coordinates: props.initialCoordinates
+      };
     }
+  });
+
+  // Coordinates are delivered directly with each suggestion from the places table.
+  watch(selected, (newSelected) => {
+    if (newSelected?.coordinates) {
+      emit('newCoordinates', newSelected.coordinates)
+    }
+  })
+
+  // Debounce timer
+  let debounceTimer = null
+
+  // Handle input change with debouncing
+  const handleInputChange = (event) => {
+    query.value = event.target.value
+
+    if (debounceTimer) {
+      clearTimeout(debounceTimer)
+    }
+
+    if (!query.value || query.value.length < 2) {
+      locations.value = []
+      return
+    }
+
+    debounceTimer = setTimeout(async () => {
+      await fetchLocationPredictions()
+    }, 300)
+  }
+
+  // Fetch location predictions from Google API
+  const fetchLocationPredictions = async () => {
+    if (!query.value || query.value.length < 2) {
+      locations.value = []
+      return
+    }
+
+    loading.value = true
+
+    try {
+      const data = await $fetch(`/api/geocoding?text=${encodeURIComponent(query.value)}`)
+
+      locations.value = data.predictions.map((prediction) => ({
+        name: prediction.description,
+        placeId: prediction.place_id,
+        // Coordinates come straight from the places table, no extra lookup needed.
+        coordinates: prediction.coordinates ?? null
+      }))
+    } catch (error) {
+      console.error('Error fetching geocoding data:', error)
+      locations.value = []
+    } finally {
+      loading.value = false
+    }
+  }
   </script>

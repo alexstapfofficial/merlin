@@ -12,7 +12,7 @@ export const ASPECTS_ID = "aspects"
 * @type {Boolean}
 * @default true
 */
-export const DRAW_ASPECTS = false
+export const DRAW_ASPECTS = true
 
 /*
 * Font size - aspects

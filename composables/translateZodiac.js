@@ -56,6 +56,8 @@ export const useTranslateZodiac = () => {
         return "N"; // North Node Symbol
       case "Lilith":
         return "l"; // Lilith Symbol
+      case "Ascendant":
+        return "`"; // Ascendant Symbol
     }
   };
 
@@ -73,7 +75,8 @@ export const useTranslateZodiac = () => {
       "Pluto": "Pluto",
       "Chiron": "Chiron",
       "NNode": "Mondknoten",
-      "Lilith": "Lilith"
+      "Lilith": "Lilith",
+      "Ascendant": "Aszendent"
     };
     return translations[planet] || planet;
   };
@@ -96,10 +99,26 @@ export const useTranslateZodiac = () => {
     return translations[zodiac] || zodiac;
   };
 
+  const getZodiacImagePath = (zodiac) => {
+    // Bildnamen entsprechen den englischen Zodiac-Namen
+    const validZodiacs = [
+      "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+      "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+    ];
+
+    if (validZodiacs.includes(zodiac)) {
+      return `/img/zodiac/${zodiac}.svg`;
+    }
+
+    // Fallback: Leerer String oder Standard-Bild
+    return "";
+  };
+
   return {
     getZodiacSymbol,
     getPlanetSymbol,
     translateZodiacName,
     translatePlanetName,
+    getZodiacImagePath,
   };
 };

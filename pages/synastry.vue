@@ -1,599 +1,816 @@
 <template>
-    <div class="synastry-container">
-        <h1>Partnerhoroskop - Synastrie</h1>
+  <div class="synastry-page">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div v-if="myProfile" class="profile-info">
+        <!-- Name -->
+        <h1 class="profile-name font-justcosmic leading-2.5 text-brown-dark">{{ myProfile.name }}</h1>
 
-        <div v-if="error" class="error-message">
-            {{ error }}
+        <!-- Zodiac Signs -->
+        <div v-if="myChart" class="zodiac-signs">
+          <div><span class="font-astronomicon p-2">Q</span>{{ sunSign }}</div>
+          <div><span class="font-astronomicon p-2">R</span>{{ moonSign }}</div>
+          <div><span class="font-astronomicon p-2">`</span>{{ ascendant }}</div>
         </div>
-
-        <!-- Birth Data Input for both partners -->
-        <div class="partners-input">
-            <div class="partner-section">
-                <h2>Person 1</h2>
-                <div class="birth-form">
-                    <UInput type="text" v-model="person1Name" placeholder="Name (optional)" class="mb-4" />
-                    <BirthdayPicker @new-date="(n) => person1Birthdate = n" class="mb-4" />
-                    <BirthTimeInput @new-time="(n) => person1Birthtime = n" class="mb-4" />
-                    <LocationInput @new-coordinates="(n) => person1Coordinates = n" />
-                </div>
-            </div>
-
-            <div class="partner-section">
-                <h2>Person 2</h2>
-                <div class="birth-form">
-                    <UInput type="text" v-model="person2Name" placeholder="Name (optional)" class="mb-4" />
-                    <BirthdayPicker @new-date="(n) => person2Birthdate = n" class="mb-4" />
-                    <BirthTimeInput @new-time="(n) => person2Birthtime = n" class="mb-4" />
-                    <LocationInput @new-coordinates="(n) => person2Coordinates = n" />
-                </div>
-            </div>
-        </div>
-
-        <div class="calculate-section">
-            <UButton
-                @click="calculateCompatibility"
-                :disabled="!canCalculate || loading"
-                size="lg"
-            >
-                {{ loading ? 'Berechne...' : 'Kompatibilität berechnen' }}
-            </UButton>
-        </div>
-
-        <!-- Results Section -->
-        <div v-if="synastryResult" class="results-section">
-            <!-- Compatibility Score Overview -->
-            <div class="score-overview">
-                <div class="total-score" :style="{ borderColor: compatibilityLevel.color }">
-                    <div class="score-number" :style="{ color: compatibilityLevel.color }">
-                        {{ synastryResult.compatibilityScore.total }}
-                    </div>
-                    <div class="score-label">von 100 Punkten</div>
-                    <div class="score-level" :style="{ color: compatibilityLevel.color }">
-                        {{ compatibilityLevel.emoji }} {{ compatibilityLevel.level }}
-                    </div>
-                </div>
-
-                <div class="score-stats">
-                    <div class="stat-item">
-                        <span class="stat-label">Aspekte insgesamt:</span>
-                        <span class="stat-value">{{ synastryResult.compatibilityScore.aspectCount }}</span>
-                    </div>
-                    <div class="stat-item positive">
-                        <span class="stat-label">Harmonisch:</span>
-                        <span class="stat-value">{{ synastryResult.compatibilityScore.positiveAspects }}</span>
-                    </div>
-                    <div class="stat-item challenging">
-                        <span class="stat-label">Herausfordernd:</span>
-                        <span class="stat-value">{{ synastryResult.compatibilityScore.challengingAspects }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Category Scores -->
-            <div class="category-scores">
-                <h3>Kompatibilität nach Bereichen</h3>
-                <div class="categories-grid">
-                    <div
-                        v-for="(data, category) in synastryResult.compatibilityScore.categories"
-                        :key="category"
-                        class="category-card"
-                    >
-                        <div class="category-name">{{ getCategoryName(category) }}</div>
-                        <div class="category-bar-container">
-                            <div
-                                class="category-bar"
-                                :style="{ width: data.percentage + '%', backgroundColor: getCategoryColor(data.percentage) }"
-                            ></div>
-                        </div>
-                        <div class="category-details">
-                            <span class="category-percentage">{{ Math.round(data.percentage) }}%</span>
-                            <span class="category-count">{{ data.count }} Aspekte</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Interpretation Button -->
-            <div class="interpretation-actions">
-                <UButton
-                    @click="interpretSynastry"
-                    :disabled="interpretationLoading"
-                    size="md"
-                >
-                    {{ interpretationLoading ? 'Interpretiere...' : 'Detaillierte Interpretation erstellen' }}
-                </UButton>
-            </div>
-
-            <!-- AI Interpretation -->
-            <div v-if="interpretation" class="interpretation-section">
-                <h3>Detaillierte Synastrie-Interpretation</h3>
-                <div class="interpretation-content" v-html="renderMarkdown(interpretation)"></div>
-            </div>
-
-            <!-- Aspects List -->
-            <div class="aspects-section">
-                <h3>Alle Aspekte ({{ synastryResult.synastryAspects.length }})</h3>
-
-                <div class="aspects-grid">
-                    <div
-                        v-for="(aspect, index) in synastryResult.synastryAspects"
-                        :key="index"
-                        class="aspect-card"
-                        :class="aspect.score > 0 ? 'positive' : 'challenging'"
-                        :style="{ borderLeftColor: getAspectColor(aspect.aspect) }"
-                    >
-                        <div class="aspect-header">
-                            <span class="planet-combo">
-                                {{ translatePlanetName(aspect.person1Planet) }}
-                                {{ getAspectSymbol(aspect.aspect) }}
-                                {{ translatePlanetName(aspect.person2Planet) }}
-                            </span>
-                            <span class="aspect-score" :class="aspect.score > 0 ? 'positive' : 'negative'">
-                                {{ aspect.score > 0 ? '+' : '' }}{{ aspect.score }}
-                            </span>
-                        </div>
-                        <div class="aspect-details">
-                            <div class="aspect-signs">
-                                {{ translateZodiacName(aspect.person1PlanetSign) }}
-                                {{ getAspectName(aspect.aspect) }}
-                                {{ translateZodiacName(aspect.person2PlanetSign) }}
-                            </div>
-                            <div class="aspect-meta">
-                                <span class="aspect-category">{{ getCategoryName(aspect.category) }}</span>
-                                <span class="aspect-orb">Orbis: {{ aspect.orb.toFixed(2) }}°</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+
+    <!-- Friends Section -->
+    <div class="friends-section">
+      <div class="section-header">
+        <h2 class="section-title">Partner Profile</h2>
+        <UButton
+          @click="showAddForm = !showAddForm"
+          :icon="showAddForm ? 'i-heroicons-x-mark' : 'i-heroicons-plus'"
+          color="black"
+          variant="solid"
+          size="sm"
+        >
+          {{ showAddForm ? 'Abbrechen' : 'Neu' }}
+        </UButton>
+      </div>
+
+      <!-- Add Friend Form -->
+      <div v-if="showAddForm" class="add-form-card">
+        <ProfileForm
+          :profile="null"
+          title="Neuer Partner"
+          @save="handleAddFriend"
+          @cancel="showAddForm = false"
+        />
+      </div>
+
+      <!-- Friends List -->
+      <div v-if="friends.length > 0" class="friends-list">
+        <div
+          v-for="friend in friends"
+          :key="friend.id"
+          @click="selectFriend(friend)"
+        >
+          <FriendCard
+            :friend="friend"
+            :is-selected="selectedFriend?.id === friend.id"
+            @edit="openEditModal"
+            @delete="deleteFriend"
+          />
+        </div>
+      </div>
+
+      <div v-else-if="!showAddForm" class="empty-state">
+        <p>Noch keine Partner Profile angelegt.</p>
+        <p class="empty-hint">Erstelle ein Partner Profil, um die Synastrie zu berechnen.</p>
+      </div>
+    </div>
+
+    <!-- Calculate Button -->
+    <div v-if="selectedFriend && myProfile" class="calculate-section">
+      <UButton
+        @click="calculateCompatibility"
+        :disabled="loading"
+        size="lg"
+        color="black"
+        block
+      >
+        {{ loading ? 'Berechne...' : 'Synastrie berechnen' }}
+      </UButton>
+    </div>
+
+    <!-- Results Section -->
+    <div v-if="synastryResult" class="results-section">
+      <!-- Compatibility Score Overview -->
+      <div class="score-card">
+        <div class="score-main">
+          <div class="score-number" :style="{ color: compatibilityLevel.color }">
+            {{ synastryResult.compatibilityScore.total }}
+          </div>
+          <div class="score-label">von 100 Punkten</div>
+          <div class="score-level" :style="{ color: compatibilityLevel.color }">
+            {{ compatibilityLevel.emoji }} {{ compatibilityLevel.level }}
+          </div>
+        </div>
+
+        <div class="score-stats">
+          <div class="stat-item">
+            <span class="stat-label">Aspekte insgesamt</span>
+            <span class="stat-value">{{ synastryResult.compatibilityScore.aspectCount }}</span>
+          </div>
+          <div class="stat-item positive">
+            <span class="stat-label">Harmonisch</span>
+            <span class="stat-value">{{ synastryResult.compatibilityScore.positiveAspects }}</span>
+          </div>
+          <div class="stat-item challenging">
+            <span class="stat-label">Herausfordernd</span>
+            <span class="stat-value">{{ synastryResult.compatibilityScore.challengingAspects }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Scores -->
+      <div class="categories-section">
+        <h3 class="subsection-title">Kompatibilität nach Bereichen</h3>
+        <div class="categories-grid">
+          <div
+            v-for="(data, category) in synastryResult.compatibilityScore.categories"
+            :key="category"
+            class="category-card"
+          >
+            <div class="category-name">{{ getCategoryName(category) }}</div>
+            <div class="category-bar-container">
+              <div
+                class="category-bar"
+                :style="{ width: data.percentage + '%', backgroundColor: getCategoryColor(data.percentage) }"
+              ></div>
+            </div>
+            <div class="category-details">
+              <span class="category-percentage">{{ Math.round(data.percentage) }}%</span>
+              <span class="category-count">{{ data.count }} Aspekte</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interpretation Button -->
+      <div class="interpretation-actions">
+        <UButton
+          @click="interpretSynastry"
+          :disabled="interpretationLoading"
+          color="black"
+          variant="outline"
+        >
+          {{ interpretationLoading ? 'Interpretiere...' : 'Detaillierte Interpretation' }}
+        </UButton>
+      </div>
+
+      <!-- AI Interpretation -->
+      <div v-if="interpretation" class="interpretation-card">
+        <h3 class="subsection-title">Synastrie-Interpretation</h3>
+        <div class="interpretation-content" v-html="renderMarkdown(interpretation)"></div>
+      </div>
+
+      <!-- Aspects List -->
+      <div class="aspects-section">
+        <h3 class="subsection-title">Alle Aspekte ({{ synastryResult.synastryAspects.length }})</h3>
+
+        <div class="aspects-list">
+          <div
+            v-for="(aspect, index) in synastryResult.synastryAspects"
+            :key="index"
+            class="aspect-card"
+            :class="aspect.score > 0 ? 'positive' : 'challenging'"
+          >
+            <div class="aspect-header">
+              <span class="planet-combo">
+                {{ translatePlanetName(aspect.person1Planet) }}
+                {{ getAspectSymbol(aspect.aspect) }}
+                {{ translatePlanetName(aspect.person2Planet) }}
+              </span>
+              <span class="aspect-score" :class="aspect.score > 0 ? 'positive' : 'negative'">
+                {{ aspect.score > 0 ? '+' : '' }}{{ aspect.score }}
+              </span>
+            </div>
+            <div class="aspect-details">
+              <div class="aspect-signs">
+                {{ translateZodiacName(aspect.person1PlanetSign) }}
+                {{ getAspectName(aspect.aspect) }}
+                {{ translateZodiacName(aspect.person2PlanetSign) }}
+              </div>
+              <div class="aspect-meta">
+                <span class="aspect-category">{{ getCategoryName(aspect.category) }}</span>
+                <span class="aspect-orb">Orbis: {{ aspect.orb.toFixed(2) }}°</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div v-if="error" class="error-message">
+      {{ error }}
+    </div>
+
+    <!-- Edit Modal -->
+    <FriendEditModal
+      v-model="showEditModal"
+      :friend="editingFriend"
+      @save="handleEditFriend"
+    />
+  </div>
 </template>
 
 <script setup>
-import { useBirthDataStore } from '~/stores/birthDataStore';
+import { useProfilesStore } from '~/stores/profilesStore';
 import { useSynastry } from '~/composables/useSynastry';
 import { useTranslateZodiac } from '~/composables/translateZodiac';
+import { useBirthChart } from '~/composables/useBirthChart';
 
-const birthDataStore = useBirthDataStore();
-const { calculateSynastry, getCompatibilityLevel, getCategoryName, getAspectColor } = useSynastry();
+const profilesStore = useProfilesStore();
+const { calculateSynastry, getCompatibilityLevel, getCategoryName } = useSynastry();
 const { translatePlanetName, translateZodiacName } = useTranslateZodiac();
+const { calculateBirthChart } = useBirthChart();
 
-// Person 1 data
-const person1Name = ref('');
-const person1Birthdate = ref({});
-const person1Birthtime = ref({});
-const person1Coordinates = ref([]);
-
-// Person 2 data
-const person2Name = ref('');
-const person2Birthdate = ref({});
-const person2Birthtime = ref({});
-const person2Coordinates = ref([]);
-
+const myProfile = ref(null);
+const myChart = ref(null);
+const friends = ref([]);
+const selectedFriend = ref(null);
+const showAddForm = ref(false);
+const showEditModal = ref(false);
+const editingFriend = ref(null);
 const synastryResult = ref(null);
 const loading = ref(false);
 const error = ref('');
 const interpretation = ref('');
 const interpretationLoading = ref(false);
 
-const canCalculate = computed(() => {
-    const person1Valid = person1Birthdate.value && Object.keys(person1Birthdate.value).length > 0 &&
-                         person1Birthtime.value && Object.keys(person1Birthtime.value).length > 0 &&
-                         person1Coordinates.value && person1Coordinates.value.length > 0;
-
-    const person2Valid = person2Birthdate.value && Object.keys(person2Birthdate.value).length > 0 &&
-                         person2Birthtime.value && Object.keys(person2Birthtime.value).length > 0 &&
-                         person2Coordinates.value && person2Coordinates.value.length > 0;
-
-    return person1Valid && person2Valid;
-});
-
 const compatibilityLevel = computed(() => {
-    if (!synastryResult.value) return { level: '', color: '#757575', emoji: '' };
-    return getCompatibilityLevel(synastryResult.value.compatibilityScore.total);
+  if (!synastryResult.value) return { level: '', color: '#757575', emoji: '' };
+  return getCompatibilityLevel(synastryResult.value.compatibilityScore.total);
 });
+
+// Calculate zodiac signs
+const sunSign = computed(() => {
+  if (!myChart.value?.planetaryPositions) return '-';
+  const sun = myChart.value.planetaryPositions.find(p => p.name === 'Sun');
+  return sun ? translateZodiacName(sun.zodiacSign) : '-';
+});
+
+const moonSign = computed(() => {
+  if (!myChart.value?.planetaryPositions) return '-';
+  const moon = myChart.value.planetaryPositions.find(p => p.name === 'Moon');
+  return moon ? translateZodiacName(moon.zodiacSign) : '-';
+});
+
+const ascendant = computed(() => {
+  if (!myChart.value?.houses?.Ascendant) return '-';
+  const ascDegree = myChart.value.houses.Ascendant;
+  const signs = ['Widder', 'Stier', 'Zwillinge', 'Krebs', 'Löwe', 'Jungfrau',
+    'Waage', 'Skorpion', 'Schütze', 'Steinbock', 'Wassermann', 'Fische'];
+  const signIndex = Math.floor(ascDegree / 30);
+  return signs[signIndex] || '-';
+});
+
+// Load profiles and birth chart
+onMounted(async () => {
+  await profilesStore.fetchProfiles();
+  myProfile.value = profilesStore.profile;
+  friends.value = profilesStore.friends || [];
+
+  // Load birth chart for zodiac signs
+  if (myProfile.value) {
+    try {
+      myChart.value = await calculateBirthChart(myProfile.value);
+    } catch (err) {
+      console.error('Fehler beim Laden des Geburtshoroskops:', err);
+    }
+  }
+});
+
+const handleAddFriend = async (friendData) => {
+  await profilesStore.addFriend(friendData);
+  friends.value = [...profilesStore.friends];
+  showAddForm.value = false;
+};
+
+const openEditModal = (friend) => {
+  editingFriend.value = friend;
+  showEditModal.value = true;
+};
+
+const handleEditFriend = async (updatedData) => {
+  await profilesStore.updateFriend(editingFriend.value.id, updatedData);
+  friends.value = [...profilesStore.friends];
+
+  // Update selected friend if it's the one being edited
+  if (selectedFriend.value?.id === editingFriend.value.id) {
+    selectedFriend.value = friends.value.find(f => f.id === editingFriend.value.id);
+    synastryResult.value = null; // Reset results as data changed
+  }
+  editingFriend.value = null;
+};
+
+const deleteFriend = async (friend) => {
+  if (confirm(`Möchtest du ${friend.name} wirklich löschen?`)) {
+    await profilesStore.deleteFriend(friend.id);
+    friends.value = [...profilesStore.friends];
+
+    if (selectedFriend.value?.id === friend.id) {
+      selectedFriend.value = null;
+      synastryResult.value = null;
+    }
+  }
+};
+
+const selectFriend = (friend) => {
+  selectedFriend.value = friend;
+  synastryResult.value = null;
+  interpretation.value = '';
+};
 
 const calculateCompatibility = async () => {
-    if (!canCalculate.value) {
-        error.value = 'Bitte füllen Sie die Geburtsdaten für beide Partner aus.';
-        return;
-    }
+  if (!myProfile.value || !selectedFriend.value) {
+    error.value = 'Bitte wähle ein Partner Profil aus.';
+    return;
+  }
 
-    loading.value = true;
-    error.value = '';
-    interpretation.value = '';
+  loading.value = true;
+  error.value = '';
+  interpretation.value = '';
 
-    try {
-        const person1Data = {
-            birthdate: person1Birthdate.value,
-            birthtime: person1Birthtime.value,
-            coordinates: person1Coordinates.value
-        };
-
-        const person2Data = {
-            birthdate: person2Birthdate.value,
-            birthtime: person2Birthtime.value,
-            coordinates: person2Coordinates.value
-        };
-
-        const result = await calculateSynastry(person1Data, person2Data);
-        synastryResult.value = result;
-    } catch (err) {
-        console.error('Fehler beim Berechnen der Synastrie:', err);
-        error.value = 'Fehler beim Berechnen der Kompatibilität. Bitte versuchen Sie es erneut.';
-    } finally {
-        loading.value = false;
-    }
+  try {
+    const result = await calculateSynastry(myProfile.value, selectedFriend.value);
+    synastryResult.value = result;
+  } catch (err) {
+    console.error('Fehler beim Berechnen der Synastrie:', err);
+    error.value = 'Fehler beim Berechnen der Kompatibilität. Bitte versuche es erneut.';
+  } finally {
+    loading.value = false;
+  }
 };
 
 const interpretSynastry = async () => {
-    if (!synastryResult.value) return;
+  if (!synastryResult.value) return;
 
-    interpretationLoading.value = true;
+  interpretationLoading.value = true;
 
-    try {
-        const response = await $fetch('/api/interpret-synastry', {
-            method: 'POST',
-            body: {
-                aspects: synastryResult.value.synastryAspects,
-                compatibilityScore: synastryResult.value.compatibilityScore
-            }
-        });
+  try {
+    const response = await $fetch('/api/interpret-synastry', {
+      method: 'POST',
+      body: {
+        aspects: synastryResult.value.synastryAspects,
+        compatibilityScore: synastryResult.value.compatibilityScore
+      }
+    });
 
-        interpretation.value = response.interpretation;
-    } catch (err) {
-        console.error('Fehler beim Interpretieren der Synastrie:', err);
-        error.value = 'Fehler beim Erstellen der Interpretation. Bitte versuchen Sie es erneut.';
-    } finally {
-        interpretationLoading.value = false;
-    }
+    interpretation.value = response.interpretation;
+  } catch (err) {
+    console.error('Fehler beim Interpretieren der Synastrie:', err);
+    error.value = 'Fehler beim Erstellen der Interpretation. Bitte versuche es erneut.';
+  } finally {
+    interpretationLoading.value = false;
+  }
 };
 
 const renderMarkdown = (markdown) => {
-    if (!markdown) return '';
+  if (!markdown) return '';
 
-    return markdown
-        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/\n/g, '<br>');
+  return markdown
+    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\n/g, '<br>');
 };
 
 const getAspectSymbol = (aspect) => {
-    const symbols = {
-        conjunction: '☌',
-        sextile: '⚹',
-        square: '□',
-        trine: '△',
-        opposition: '☍'
-    };
-    return symbols[aspect] || aspect;
+  const symbols = {
+    conjunction: '☌',
+    sextile: '⚹',
+    square: '□',
+    trine: '△',
+    opposition: '☍'
+  };
+  return symbols[aspect] || aspect;
 };
 
 const getAspectName = (aspect) => {
-    const names = {
-        conjunction: 'Konjunktion',
-        sextile: 'Sextil',
-        square: 'Quadrat',
-        trine: 'Trigon',
-        opposition: 'Opposition'
-    };
-    return names[aspect] || aspect;
+  const names = {
+    conjunction: 'Konjunktion',
+    sextile: 'Sextil',
+    square: 'Quadrat',
+    trine: 'Trigon',
+    opposition: 'Opposition'
+  };
+  return names[aspect] || aspect;
 };
 
 const getCategoryColor = (percentage) => {
-    if (percentage >= 70) return '#4caf50';
-    if (percentage >= 60) return '#8bc34a';
-    if (percentage >= 50) return '#ffc107';
-    if (percentage >= 40) return '#ff9800';
-    return '#f44336';
+  if (percentage >= 70) return '#4caf50';
+  if (percentage >= 60) return '#8bc34a';
+  if (percentage >= 50) return '#ffc107';
+  if (percentage >= 40) return '#ff9800';
+  return '#f44336';
 };
 </script>
 
 <style scoped>
-.synastry-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem;
+.synastry-page {
+  min-height: 100vh;
+  background: #F5ECDC;
+  padding-bottom: 80px;
 }
 
-h1 {
-    font-size: 2rem;
-    margin-bottom: 2rem;
-    color: #333;
-    text-align: center;
+.profile-header {
+  position: relative;
+  background: #D7C9B2;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: #555;
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
 }
 
-h3 {
-    font-size: 1.3rem;
-    margin-bottom: 1rem;
-    color: #666;
+.profile-name {
+  font-size: 2.25rem;
+  font-weight: 700;
+  padding: 1rem;
 }
 
-.error-message {
-    background-color: #fee;
-    border: 1px solid #fcc;
-    color: #c33;
-    padding: 1rem;
-    border-radius: 4px;
-    margin-bottom: 1rem;
+.zodiac-signs {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
-.partners-input {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin-bottom: 2rem;
+.page-header {
+  position: relative;
+  background: #D7C9B2;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-@media (max-width: 768px) {
-    .partners-input {
-        grid-template-columns: 1fr;
-    }
+.back-button {
+  background: transparent;
+  border: none;
+  color: #1F1D20;
+  padding: 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.partner-section {
-    padding: 1.5rem;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    border: 2px solid #e0e0e0;
+.back-button:hover {
+  background: rgba(31, 29, 32, 0.1);
+}
+
+.back-icon {
+  font-size: 1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1F1D20;
+  margin: 0;
+}
+
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1F1D20;
+  margin-bottom: 1rem;
+}
+
+.friends-section {
+  padding: 1.5rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.add-form-card {
+  background: #D7C9B2;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.friends-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.friend-item {
+  cursor: pointer;
+  transition: transform 0.2s;
+  border: 3px solid transparent;
+  border-radius: 8px;
+}
+
+.friend-item:hover {
+  transform: translateY(-2px);
+}
+
+.friend-item.selected {
+  border-color: #1F1D20;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #7B7369;
+}
+
+.empty-hint {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
 }
 
 .calculate-section {
-    text-align: center;
-    margin: 2rem 0;
+  padding: 1.5rem;
 }
 
 .results-section {
-    margin-top: 3rem;
+  padding: 1.5rem;
 }
 
-.score-overview {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 2rem;
-    margin-bottom: 3rem;
-    padding: 2rem;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    border-radius: 12px;
+.score-card {
+  background: linear-gradient(135deg, #1F1D20 0%, #4D4845 100%);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.total-score {
-    text-align: center;
-    padding: 2rem;
-    background-color: white;
-    border-radius: 12px;
-    border: 4px solid;
-    min-width: 200px;
+.score-main {
+  text-align: center;
+  padding: 2rem;
+  background: #F5ECDC;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
 }
 
 .score-number {
-    font-size: 4rem;
-    font-weight: bold;
-    line-height: 1;
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .score-label {
-    font-size: 0.9rem;
-    color: #666;
-    margin: 0.5rem 0;
+  font-size: 0.9rem;
+  color: #7B7369;
+  margin: 0.5rem 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .score-level {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-top: 1rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-top: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .score-stats {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .stat-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem;
-    background-color: white;
-    border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  background: rgba(245, 236, 220, 0.95);
+  border-radius: 8px;
+  border-left: 4px solid #D7C9B2;
 }
 
 .stat-item.positive {
-    border-left: 4px solid #4caf50;
+  border-left-color: #4caf50;
 }
 
 .stat-item.challenging {
-    border-left: 4px solid #ff9800;
+  border-left-color: #ff9800;
 }
 
 .stat-label {
-    font-weight: 500;
-    color: #666;
+  font-weight: 600;
+  color: #7B7369;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.5px;
 }
 
 .stat-value {
-    font-size: 1.3rem;
-    font-weight: bold;
-    color: #333;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1F1D20;
 }
 
-.category-scores {
-    margin-bottom: 3rem;
+.categories-section {
+  margin-bottom: 2rem;
+}
+
+.subsection-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1F1D20;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .categories-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
 }
 
 .category-card {
-    padding: 1.5rem;
-    background-color: white;
-    border-radius: 8px;
-    border: 2px solid #e0e0e0;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  border: 2px solid #D7C9B2;
 }
 
 .category-name {
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: #333;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1F1D20;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.5px;
 }
 
 .category-bar-container {
-    height: 20px;
-    background-color: #f0f0f0;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 0.5rem;
+  height: 20px;
+  background: #F5ECDC;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
 }
 
 .category-bar {
-    height: 100%;
-    transition: width 0.5s ease;
-    border-radius: 10px;
+  height: 100%;
+  transition: width 0.5s ease;
+  border-radius: 10px;
 }
 
 .category-details {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
 }
 
 .category-percentage {
-    font-weight: 600;
-    color: #333;
+  font-weight: 700;
+  color: #1F1D20;
 }
 
 .category-count {
-    color: #666;
+  color: #7B7369;
 }
 
 .interpretation-actions {
-    text-align: center;
-    margin: 2rem 0;
+  text-align: center;
+  margin: 2rem 0;
 }
 
-.interpretation-section {
-    margin-bottom: 3rem;
-    padding: 2rem;
-    background-color: #f0f7ff;
-    border: 2px solid #90caf9;
-    border-radius: 8px;
+.interpretation-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  border: 2px solid #D7C9B2;
+  margin-bottom: 2rem;
 }
 
 .interpretation-content {
-    line-height: 1.8;
-    color: #333;
-}
-
-.interpretation-content h2 {
-    color: #1976d2;
-    margin-top: 1.5rem;
-}
-
-.interpretation-content strong {
-    color: #1976d2;
+  line-height: 1.8;
+  color: #1F1D20;
 }
 
 .aspects-section {
-    margin-top: 3rem;
+  margin-top: 2rem;
 }
 
-.aspects-grid {
-    display: grid;
-    gap: 1rem;
-    margin-top: 1rem;
+.aspects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .aspect-card {
-    padding: 1rem;
-    background-color: white;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    border-left: 4px solid;
-    transition: transform 0.2s, box-shadow 0.2s;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  border: 2px solid #D7C9B2;
+  border-left-width: 4px;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .aspect-card:hover {
-    transform: translateX(4px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .aspect-card.positive {
-    background-color: #f1f8f4;
+  background: #f1f8f4;
+  border-left-color: #4caf50;
 }
 
 .aspect-card.challenging {
-    background-color: #fff8f0;
+  background: #fff8f0;
+  border-left-color: #ff9800;
 }
 
 .aspect-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .planet-combo {
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: #333;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1F1D20;
 }
 
 .aspect-score {
-    font-size: 1.2rem;
-    font-weight: bold;
-    padding: 0.25rem 0.75rem;
-    border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 8px;
 }
 
 .aspect-score.positive {
-    background-color: #c8e6c9;
-    color: #2e7d32;
+  background: #c8e6c9;
+  color: #2e7d32;
 }
 
 .aspect-score.negative {
-    background-color: #ffccbc;
-    color: #d84315;
+  background: #ffccbc;
+  color: #d84315;
 }
 
 .aspect-details {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .aspect-signs {
-    color: #666;
-    font-size: 0.95rem;
+  color: #7B7369;
+  font-size: 0.875rem;
 }
 
 .aspect-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: #999;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #7B7369;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .aspect-category {
-    font-weight: 500;
-    color: #666;
+  font-weight: 600;
 }
 
-.aspect-orb {
-    color: #999;
+.error-message {
+  background: #fee;
+  border: 2px solid #fcc;
+  color: #c33;
+  padding: 1rem;
+  border-radius: 12px;
+  margin: 1.5rem;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .synastry-page {
+    padding-bottom: 70px;
+  }
+
+  .page-header {
+    padding: 1.5rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .score-card {
+    padding: 1.5rem;
+  }
+
+  .score-number {
+    font-size: 3rem;
+  }
+
+  .categories-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

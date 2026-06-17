@@ -1,9 +1,23 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+
 @font-face {
     font-family: "Astronomicon";
-    src: url("~/assets/fonts/Astronomicon.ttf")  
+    src: url("~/assets/fonts/Astronomicon.ttf")
 }
 
 @font-face {
     font-family: "JustCosmic";
     src: url("~/assets/fonts/just-cosmic.ttf") format('truetype')
 }
+
+/* Custom font utilities */
+.font-astronomicon {
+  font-family: "Astronomicon", serif;
+}
+
+.font-justcosmic {
+  font-family: "JustCosmic", sans-serif;
+}
+

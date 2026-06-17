@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 
 
 export const useBirthDataStore = defineStore("birthdata", {
+  persist: true,
   state: () => ({
     name: '',
     birthdate: {},

@@ -4,7 +4,8 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event)
 
     const birthYear = body.birthdate.birthyear;
-    const birthMonth = body.birthdate.birthmonth === 12 ? 1 : body.birthdate.birthmonth + 1;
+    // birthmonth kommt 0-basiert (0=Januar, 11=Dezember), konvertiere zu 1-12
+    const birthMonth = body.birthdate.birthmonth + 1;
     const birthDay = body.birthdate.birthday;
     const birthHour = body.birthtime.birthhour;
     const birthMinute = body.birthtime.birthminute;

@@ -149,7 +149,7 @@ class RadixChart extends Chart {
    * @return {Number}
    */
   getCenterCircleRadius() {
-    return 12 * (this.getRadius() / this.#numberOfLevels)
+    return 10 * (this.getRadius() / this.#numberOfLevels)
   }
 
   /**
@@ -288,8 +288,8 @@ class RadixChart extends Chart {
       let a1 = Utils.degreeToRadian(angleFromInDegree, this.getAscendantShift())
       let a2 = Utils.degreeToRadian(angleToInDegree, this.getAscendantShift())
       let segment = SVGUtils.SVGSegment(this.#centerX, this.#centerY, this.getOuterCircleRadius(), a1, a2, this.getInnerCircleRadius());
-      //segment.setAttribute("fill", this.#settings.CHART_STROKE_ONLY ? "none" : COLORS_SIGNS[symbolIndex]);
-      segment.setAttribute("stroke", "black");
+      segment.setAttribute("fill", this.#settings.CHART_STROKE_ONLY ? "none" : COLORS_SIGNS[symbolIndex]);
+      segment.setAttribute("stroke", "white");
       segment.setAttribute("stroke-width", 1);
       return segment
     }

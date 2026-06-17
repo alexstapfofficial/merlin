@@ -33,21 +33,40 @@ import { useBirthDataStore } from '~/stores/birthDataStore';
 import { storeToRefs } from 'pinia';
 
 const birthDataStore = useBirthDataStore();
-const { birthdate, birthtime, coordinates, horoscope } = storeToRefs(birthDataStore);
+const { horoscope } = storeToRefs(birthDataStore);
 
 
 // Erstelle das birthChart aus den Horoskop-Daten
 const birthChart = computed(() => {
   const chart = [];
+  const excludedPlanets = ['NNode', 'Chiron', 'Lilith'];
+
   if (horoscope.value?.houses) {
+    // Füge Aszendent als erstes Element hinzu
+    const ascendant = horoscope.value.houses.Ascendant;
+    const ascendantSign = horoscope.value.houses.Houses[0]?.zodiacSign;
+
+    if (ascendant !== undefined && ascendantSign) {
+      chart.push({
+        planet: 'Ascendant',
+        sign: ascendantSign,
+        house: 1,
+        degree: ascendant,
+      });
+    }
+
+    // Füge alle Planeten hinzu
     horoscope.value.houses.Houses.forEach((house) => {
       house.planets.forEach((planet) => {
-        chart.push({
-          planet: planet.name,
-          sign: planet.sign,
-          house: house.houseNumber,
-          degree: planet.degree,
-        });
+        // Überspringe Mondknoten, Chiron und Lilith
+        if (!excludedPlanets.includes(planet.name)) {
+          chart.push({
+            planet: planet.name,
+            sign: planet.sign,
+            house: house.houseNumber,
+            degree: planet.degree,
+          });
+        }
       });
     });
   }
@@ -163,8 +182,12 @@ const downloadPlanetTableAsPng=()=>{
 <style scoped>
 .table-container {
   max-width: 100%;
+  width: 100%;
 }
 
+.astro-table {
+  width: 100%;
+}
 
 .astro-table th,
 .astro-table td {

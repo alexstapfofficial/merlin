@@ -44,7 +44,6 @@ const downloadBirthChartAsPng = () => {
 <style scoped>
 .chart-wrapper {
   width: 100%;
-  min-height: 600px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -52,10 +51,9 @@ const downloadBirthChartAsPng = () => {
 }
 
 #paper {
-  font: 12px 'Astronomicon';
-  width: 600px;
-  height: 600px;
-  max-width: 100%;
+  font: 18px 'Astronomicon';
+  width: 100%;
+  height: auto;
 }
 
 .error-message {

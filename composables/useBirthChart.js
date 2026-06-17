@@ -71,9 +71,33 @@ export const useBirthChart = () => {
       angle: planet.angle
     }));
 
-    const cusps = horoscope.houses.Houses.map((house) => ({
-      angle: house.angle
-    }));
+    // Für das Chart-Rendering müssen die Hauptachsen korrekt sein
+    // Die astrochart2 Bibliothek erwartet:
+    // - cusps[0] = ASC (Haus 1)
+    // - cusps[3] = IC (Haus 4)
+    // - cusps[6] = DSC (Haus 7)
+    // - cusps[9] = MC (Haus 10)
+    const asc = horoscope.houses.Ascendant;
+    const mc = horoscope.houses.Midheaven;
+
+    const cusps = horoscope.houses.Houses.map((house, index) => {
+      // Hauptachsen müssen exakt sein für korrektes Rendering
+      if (index === 0) {
+        // Haus 1 = Aszendent
+        return { angle: asc };
+      } else if (index === 3) {
+        // Haus 4 = IC (MC + 180°)
+        return { angle: (mc + 180) % 360 };
+      } else if (index === 6) {
+        // Haus 7 = Deszendent (ASC + 180°)
+        return { angle: (asc + 180) % 360 };
+      } else if (index === 9) {
+        // Haus 10 = MC
+        return { angle: mc };
+      }
+      // Alle anderen Häuser: Original-Werte vom Placidus-System
+      return { angle: house.angle };
+    });
 
     return {
       points,

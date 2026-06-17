@@ -106,7 +106,9 @@ export const useProfile = () => {
   const formatBirthDate = (birthdate) => {
     if (!birthdate) return '';
     const { birthday, birthmonth, birthyear } = birthdate;
-    return `${birthday}.${birthmonth}.${birthyear}`;
+    // birthmonth ist 0-basiert (0=Januar, 11=Dezember), daher +1 für Anzeige
+    const displayMonth = birthmonth + 1;
+    return `${birthday}.${displayMonth}.${birthyear}`;
   };
 
   /**
