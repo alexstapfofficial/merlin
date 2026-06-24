@@ -13,7 +13,7 @@ export default defineNuxtConfig({
     public: {
       // Web: same-origin (''). App: remote Vercel-API (per ENV überschreibbar).
       apiBase: isApp
-        ? (process.env.NUXT_PUBLIC_API_BASE || 'https://horoskop.vercel.app')
+        ? (process.env.NUXT_PUBLIC_API_BASE || 'https://merlin-ruby.vercel.app')
         : '',
       // Supabase (anon key ist public-safe). NIEMALS service_role hier ablegen.
       // ENV: SUPABASE_URL / SUPABASE_ANON_KEY (bzw. NUXT_PUBLIC_* zur Laufzeit).
