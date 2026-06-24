@@ -7,7 +7,7 @@
     "dev": "nuxt dev --host",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "postinstall": "nuxt prepare && prisma generate",
     "generate:app": "BUILD_TARGET=app nuxt generate",
     "ios": "BUILD_TARGET=app nuxt generate && npx cap sync ios && npx cap open ios",
     "dev:app": "BUILD_TARGET=app NUXT_PUBLIC_API_BASE=http://localhost:3000 nuxt dev --port 3001"
