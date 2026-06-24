@@ -18,6 +18,13 @@ logs
 .fleet
 .idea
 
+# macOS/iCloud duplicate copies (e.g. "package-lock 2.json")
+* [0-9].*
+
+# Raw geocoding/geonames data dumps (imported into the DB, not the repo)
+/DE.txt
+/DET.txt
+
 # Local env files
 .env
 .env.*
