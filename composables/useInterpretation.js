@@ -10,15 +10,6 @@ export const useInterpretation = () => {
     return data.markdown;
   };
 
-  // Reusable per-element building block (planet placement / aspect).
-  const fetchBlock = async (key, label) => {
-    const data = await $fetch('/api/interpret-block', {
-      method: 'POST',
-      body: { key, label },
-    });
-    return data.markdown;
-  };
-
   // Personal daily horoscope for `date` (YYYY-MM-DD), split into life areas
   // (each tagged harmonisch/herausfordernd/ausgeglichen). Cached per profile + day.
   const fetchDaily = async (profileId, date, transits, sky) => {
@@ -29,5 +20,5 @@ export const useInterpretation = () => {
     return { intro: data.intro, areas: data.areas || [] };
   };
 
-  return { fetchReading, fetchBlock, fetchDaily };
+  return { fetchReading, fetchDaily };
 };
