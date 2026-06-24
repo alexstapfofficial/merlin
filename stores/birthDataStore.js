@@ -53,7 +53,7 @@ export const useBirthDataStore = defineStore("birthdata", {
       // and converts to UTC itself — so we must NOT pre-shift the time here
       // (the old utcDate math used the browser's timezone and shifted twice,
       // which threw the Ascendant off by ~1 sign).
-      const data = await $fetch('/api/birthchart', {
+      const data = await useApi()('/api/birthchart', {
         method: 'POST',
         body: {
           birthdate: {

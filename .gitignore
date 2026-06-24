@@ -31,3 +31,7 @@ logs
 !.env.example
 
 /generated/prisma
+
+# Capacitor native projects (regenerate via `npx cap add ios`)
+/ios
+/android

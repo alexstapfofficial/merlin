@@ -26,7 +26,7 @@ export const useProfilesStore = defineStore("profiles", {
   actions: {
     // Load the user's profile and friends from the database.
     async fetchProfiles() {
-      const all = await $fetch("/api/profiles");
+      const all = await useApi()("/api/profiles");
       this.profile = all.find((p) => p.isOwner) || null;
       this.friends = all.filter((p) => !p.isOwner);
       this.loaded = true;
@@ -47,12 +47,12 @@ export const useProfilesStore = defineStore("profiles", {
       };
 
       if (this.profile) {
-        this.profile = await $fetch(`/api/profiles/${this.profile.id}`, {
+        this.profile = await useApi()(`/api/profiles/${this.profile.id}`, {
           method: "PUT",
           body: payload,
         });
       } else {
-        this.profile = await $fetch("/api/profiles", {
+        this.profile = await useApi()("/api/profiles", {
           method: "POST",
           body: payload,
         });
@@ -67,13 +67,13 @@ export const useProfilesStore = defineStore("profiles", {
 
     async deleteProfile() {
       if (!this.profile) return;
-      await $fetch(`/api/profiles/${this.profile.id}`, { method: "DELETE" });
+      await useApi()(`/api/profiles/${this.profile.id}`, { method: "DELETE" });
       this.profile = null;
     },
 
     // Friends management
     async addFriend(friendData) {
-      const friend = await $fetch("/api/profiles", {
+      const friend = await useApi()("/api/profiles", {
         method: "POST",
         body: {
           name: friendData.name,
@@ -88,7 +88,7 @@ export const useProfilesStore = defineStore("profiles", {
     },
 
     async updateFriend(friendId, friendData) {
-      const updated = await $fetch(`/api/profiles/${friendId}`, {
+      const updated = await useApi()(`/api/profiles/${friendId}`, {
         method: "PUT",
         body: {
           name: friendData.name,
@@ -103,7 +103,7 @@ export const useProfilesStore = defineStore("profiles", {
     },
 
     async deleteFriend(friendId) {
-      await $fetch(`/api/profiles/${friendId}`, { method: "DELETE" });
+      await useApi()(`/api/profiles/${friendId}`, { method: "DELETE" });
       this.friends = this.friends.filter((f) => f.id !== friendId);
     },
   },

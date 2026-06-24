@@ -155,7 +155,7 @@
     loading.value = true
 
     try {
-      const data = await $fetch(`/api/geocoding?text=${encodeURIComponent(query.value)}`)
+      const data = await useApi()(`/api/geocoding?text=${encodeURIComponent(query.value)}`)
 
       locations.value = data.predictions.map((prediction) => ({
         name: prediction.description,
