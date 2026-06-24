@@ -32,6 +32,8 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'app' })
+
 import { useWiki } from '~/composables/useWiki';
 
 const { categories } = useWiki();

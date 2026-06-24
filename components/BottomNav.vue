@@ -34,7 +34,7 @@
 const route = useRoute();
 
 const tabs = [
-  { to: '/',           label: 'Heute',     icon: 'i-heroicons-home',      match: ['/'] },
+  { to: '/heute',      label: 'Heute',     icon: 'i-heroicons-home',      match: ['/heute'] },
   { to: '/himmel',     label: 'Himmel',    icon: 'i-heroicons-star',      match: ['/himmel'] },
   { to: '/deutungen',  label: 'Deutungen', icon: 'i-heroicons-sparkles',  match: ['/deutungen'], center: true },
   // Synastrie/Kreis vorerst aus dem Menü genommen — Seiten & Komponenten bleiben erhalten.

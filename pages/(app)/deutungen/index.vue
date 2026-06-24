@@ -70,6 +70,8 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'app' })
+
 const year = new Date().getFullYear();
 
 const products = [

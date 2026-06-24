@@ -121,6 +121,8 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'app' })
+
 import { useActiveChart } from '~/composables/useActiveChart';
 import { useProfile } from '~/composables/useProfile';
 import { useInterpretation } from '~/composables/useInterpretation';
