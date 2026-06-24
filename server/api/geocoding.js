@@ -39,9 +39,19 @@ export default defineEventHandler(async (event) => {
     return { predictions };
   } catch (error) {
     console.error('Geocoding error:', error);
+    // TEMP DEBUG: echte Ursache sichtbar machen (Passwort maskiert). Wird nach
+    // der Diagnose wieder entfernt.
+    const dbUrl = process.env.DATABASE_URL || '';
+    const masked = dbUrl.replace(/:[^:@/]*@/, ':***@');
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to fetch geocoding data'
+      statusMessage: 'Failed to fetch geocoding data',
+      data: {
+        message: error?.message,
+        code: error?.code,
+        name: error?.name,
+        dbTarget: masked.split('@')[1] || '(keine DATABASE_URL gesetzt)'
+      }
     });
   }
 });
