@@ -64,6 +64,8 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'app' })
+
 import { useProfilesStore } from '~/stores/profilesStore';
 
 const profilesStore = useProfilesStore();

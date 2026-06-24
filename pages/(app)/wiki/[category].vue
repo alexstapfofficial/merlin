@@ -62,6 +62,8 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'app' })
+
 import { useWiki } from '~/composables/useWiki';
 import { renderMarkdown } from '~/composables/useMarkdown';
 

@@ -89,6 +89,8 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'app' })
+
 import { useProfilesStore } from '~/stores/profilesStore';
 import { useTransits } from '~/composables/useTransits';
 import { useTranslateZodiac } from '~/composables/translateZodiac';

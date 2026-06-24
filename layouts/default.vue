@@ -1,12 +1,12 @@
 <template>
-  <div class="app-layout">
+  <!-- Marketing-/Web-Layout: kein App-Chrome, keine Tab-Bar -->
+  <div class="marketing-layout">
     <slot />
-    <BottomNav />
   </div>
 </template>
 
 <style>
-.app-layout {
+.marketing-layout {
   min-height: 100vh;
 }
 </style>

@@ -69,6 +69,8 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'app' })
+
 import { useProfilesStore } from '~/stores/profilesStore';
 import { useActiveChart } from '~/composables/useActiveChart';
 import { useSynastry } from '~/composables/useSynastry';

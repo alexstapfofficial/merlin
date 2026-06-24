@@ -77,6 +77,8 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'app' })
+
 import { useProfilesStore } from '~/stores/profilesStore';
 import { useSynastry } from '~/composables/useSynastry';
 import { useTranslateZodiac } from '~/composables/translateZodiac';

@@ -100,6 +100,8 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'app' })
+
 import Birthchart from '~/components/birthchart.vue';
 import Planets from '~/components/Planets.vue';
 import Aspects from '~/components/aspects.vue';
