@@ -359,7 +359,7 @@ onMounted(ensureLoaded);
 
 /* sticky Kapitel-Navigation */
 .kapnav {
-  position: sticky; top: 0; z-index: 20;
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
   display: flex; gap: 8px; overflow-x: auto;
   margin: 22px -22px 6px; padding: 11px 22px;
   background: rgba(239, 233, 216, 0.85);
@@ -382,7 +382,7 @@ onMounted(ensureLoaded);
 .kapnav__item.active .kapnav__num { color: var(--gold-light); opacity: 0.9; }
 
 /* Kapitel */
-.chap { margin-top: 30px; scroll-margin-top: 72px; }
+.chap { margin-top: 30px; scroll-margin-top: calc(72px + env(safe-area-inset-top, 0px)); }
 .chap__head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
 .chap__glyph {
   font-size: 22px; width: 42px; height: 42px; flex: none;
