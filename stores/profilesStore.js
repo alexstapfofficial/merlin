@@ -2,109 +2,109 @@ import { defineStore } from "pinia";
 
 export const useProfilesStore = defineStore("profiles", {
   state: () => ({
-    myProfile: null,
-    friendProfiles: [],
+    profile: null,
+    friends: [],
+    loaded: false,
   }),
 
   getters: {
-    getAllProfiles() {
-      const profiles = [];
-      if (this.myProfile) {
-        profiles.push({ ...this.myProfile, isMine: true });
-      }
-      profiles.push(...this.friendProfiles.map(p => ({ ...p, isMine: false })));
-      return profiles;
+    hasProfile() {
+      return this.profile !== null;
     },
-
-    getProfileById: (state) => (id) => {
-      if (state.myProfile && state.myProfile.id === id) {
-        return state.myProfile;
-      }
-      return state.friendProfiles.find(p => p.id === id);
+    hasFriends() {
+      return this.friends.length > 0;
+    },
+    // Backward-compatible aliases used by some pages.
+    myProfile() {
+      return this.profile;
+    },
+    friendProfiles() {
+      return this.friends;
     },
   },
 
   actions: {
-    setMyProfile(profileData) {
-      this.myProfile = {
-        id: 'my-profile',
+    // Load the user's profile and friends from the database.
+    async fetchProfiles() {
+      const all = await $fetch("/api/profiles");
+      this.profile = all.find((p) => p.isOwner) || null;
+      this.friends = all.filter((p) => !p.isOwner);
+      this.loaded = true;
+    },
+
+    // Backward-compatible alias for previous localStorage-based API.
+    async loadFromLocalStorage() {
+      return this.fetchProfiles();
+    },
+
+    async setProfile(profileData) {
+      const payload = {
         name: profileData.name,
         birthdate: profileData.birthdate,
         birthtime: profileData.birthtime,
         coordinates: profileData.coordinates,
-        createdAt: new Date().toISOString(),
+        isOwner: true,
       };
-      this.saveToLocalStorage();
-    },
 
-    addFriendProfile(profileData) {
-      const newProfile = {
-        id: `profile-${Date.now()}`,
-        name: profileData.name,
-        birthdate: profileData.birthdate,
-        birthtime: profileData.birthtime,
-        coordinates: profileData.coordinates,
-        createdAt: new Date().toISOString(),
-      };
-      this.friendProfiles.push(newProfile);
-      this.saveToLocalStorage();
-    },
-
-    updateProfile(id, profileData) {
-      if (id === 'my-profile') {
-        this.myProfile = {
-          ...this.myProfile,
-          name: profileData.name,
-          birthdate: profileData.birthdate,
-          birthtime: profileData.birthtime,
-          coordinates: profileData.coordinates,
-        };
+      if (this.profile) {
+        this.profile = await $fetch(`/api/profiles/${this.profile.id}`, {
+          method: "PUT",
+          body: payload,
+        });
       } else {
-        const index = this.friendProfiles.findIndex(p => p.id === id);
-        if (index !== -1) {
-          this.friendProfiles[index] = {
-            ...this.friendProfiles[index],
-            name: profileData.name,
-            birthdate: profileData.birthdate,
-            birthtime: profileData.birthtime,
-            coordinates: profileData.coordinates,
-          };
-        }
+        this.profile = await $fetch("/api/profiles", {
+          method: "POST",
+          body: payload,
+        });
       }
-      this.saveToLocalStorage();
+      return this.profile;
     },
 
-    deleteProfile(id) {
-      if (id === 'my-profile') {
-        this.myProfile = null;
-      } else {
-        this.friendProfiles = this.friendProfiles.filter(p => p.id !== id);
-      }
-      this.saveToLocalStorage();
+    // Updating the owner profile is the same operation as setting it.
+    async updateProfile(profileData) {
+      return this.setProfile(profileData);
     },
 
-    saveToLocalStorage() {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('astro-profiles', JSON.stringify({
-          myProfile: this.myProfile,
-          friendProfiles: this.friendProfiles,
-        }));
-      }
+    async deleteProfile() {
+      if (!this.profile) return;
+      await $fetch(`/api/profiles/${this.profile.id}`, { method: "DELETE" });
+      this.profile = null;
     },
 
-    loadFromLocalStorage() {
-      if (typeof window !== 'undefined') {
-        const data = localStorage.getItem('astro-profiles');
-        if (data) {
-          try {
-            const parsed = JSON.parse(data);
-            this.myProfile = parsed.myProfile || null;
-            this.friendProfiles = parsed.friendProfiles || [];
-          } catch (e) {
-            console.error('Error loading profiles from localStorage:', e);
-          }
-        }
-      }
+    // Friends management
+    async addFriend(friendData) {
+      const friend = await $fetch("/api/profiles", {
+        method: "POST",
+        body: {
+          name: friendData.name,
+          birthdate: friendData.birthdate,
+          birthtime: friendData.birthtime,
+          coordinates: friendData.coordinates,
+          isOwner: false,
+        },
+      });
+      this.friends.push(friend);
+      return friend;
+    },
+
+    async updateFriend(friendId, friendData) {
+      const updated = await $fetch(`/api/profiles/${friendId}`, {
+        method: "PUT",
+        body: {
+          name: friendData.name,
+          birthdate: friendData.birthdate,
+          birthtime: friendData.birthtime,
+          coordinates: friendData.coordinates,
+        },
+      });
+      const index = this.friends.findIndex((f) => f.id === friendId);
+      if (index !== -1) this.friends[index] = updated;
+      return updated;
+    },
+
+    async deleteFriend(friendId) {
+      await $fetch(`/api/profiles/${friendId}`, { method: "DELETE" });
+      this.friends = this.friends.filter((f) => f.id !== friendId);
     },
   },
 });

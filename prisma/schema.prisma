@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  name        String
+  isOwner     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  coordinates Json
+  birthdate   Json
+  birthtime   Json
+
+  readings    ChartReading[]
+}
+
+/// Per-profile holistic interpretations (the synthesis for one person's chart).
+model ChartReading {
+  id            String   @id @default(cuid())
+  profileId     String
+  profile       Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  section       String
+  markdown      String
+  inputHash     String
+  model         String
+  promptVersion Int
+  createdAt     DateTime @default(now())
+
+  @@unique([profileId, section, promptVersion])
+}
+
+/// Cross-user, reusable building blocks (e.g. "Mond in Fische im 11. Haus").
+model InterpretationBlock {
+  id            String   @id @default(cuid())
+  key           String
+  markdown      String
+  model         String
+  promptVersion Int
+  createdAt     DateTime @default(now())
+
+  @@unique([key, promptVersion])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model places {
+  id         BigInt  @id @default(autoincrement())
+  plz        String
+  name       String
+  bundesland String?
+  landkreis  String?
+  latitude   Float
+  longitude  Float
+
+  @@index([name(ops: raw("gin_trgm_ops"))], map: "places_name_trgm", type: Gin)
+  @@index([plz])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model geonames_raw {
+  geonameid      BigInt?
+  name           String?
+  asciiname      String?
+  alternatenames String?
+  latitude       Float?
+  longitude      Float?
+  feature_class  String?
+  feature_code   String?
+  country_code   String?
+  cc2            String?
+  admin1_code    String?
+  admin2_code    String?
+  admin3_code    String?
+  admin4_code    String?
+  population     BigInt?
+  elevation      Int?
+  dem            Int?
+  timezone       String?
+  mod_date       DateTime? @db.Date
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model valid_orte {
+  nrm String?
+
+  @@index([nrm])
+  @@ignore
+}

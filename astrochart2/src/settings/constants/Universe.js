@@ -38,7 +38,7 @@ export const CHART_STROKE = 0.7
 * @type {Number}
 * @default 1
 */
-export const CHART_MAIN_STROKE = 2
+export const CHART_MAIN_STROKE = 2.5
 
 /**
 * No fill, only stroke

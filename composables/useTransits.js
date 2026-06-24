@@ -1,5 +1,8 @@
 export const useTransits = () => {
-  const calculateTransits = async (birthData, transitDate = new Date()) => {
+  // exactTime=true → rechnet auf die genaue Uhrzeit von transitDate (für „Der
+  // Himmel · jetzt", v.a. den Aszendenten). Standard bleibt 12:00 Uhr, damit
+  // Tages-Transite stabil/mittig liegen (transits.vue, horoscopes.vue).
+  const calculateTransits = async (birthData, transitDate = new Date(), { exactTime = false } = {}) => {
     try {
       // Convert birth data to the format needed for the API
       const birthYear = birthData.birthdate.birthyear;
@@ -14,8 +17,9 @@ export const useTransits = () => {
       const transitYear = transitDate.getFullYear();
       const transitMonth = transitDate.getMonth() + 1;
       const transitDay = transitDate.getDate();
-      const transitHour = 12; // Use noon for daily transits
-      const transitMinute = 0;
+      // 12:00 für stabile Tages-Transite; bei exactTime die echte Uhrzeit (für „jetzt")
+      const transitHour = exactTime ? transitDate.getHours() : 12;
+      const transitMinute = exactTime ? transitDate.getMinutes() : 0;
 
       const response = await $fetch('/api/transits', {
         method: 'POST',

@@ -8,6 +8,10 @@ export default defineNuxtConfig({
 
   modules: ['@nuxt/ui', '@nuxt/fonts', '@pinia/nuxt', '@nuxtjs/i18n'],
 
+  ui: {
+    colorMode: false
+  },
+
   i18n: {
     vueI18n: './i18n.config.ts'
   },
@@ -21,10 +25,33 @@ export default defineNuxtConfig({
       meta: [
         {
           name: 'viewport',
-          content: 'width=device-width, initial-scale=1.0, user-scalable=no'
+          content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'
+        },
+        {
+          name: 'apple-mobile-web-app-capable',
+          content: 'yes'
+        },
+        {
+          name: 'apple-mobile-web-app-status-bar-style',
+          content: 'black-translucent'
+        },
+        {
+          name: 'format-detection',
+          content: 'telephone=no'
         }
       ],
       title: "CosmicPath",
+      htmlAttrs: {
+        lang: 'de'
+      },
+      link: [
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap'
+        }
+      ],
       script: [
         {
           src: "https://github.com/Kibo/AstrologyChart2/tree/master/dist#:~:text=8%20months%20ago-,astrochart2.min.js,-v0.7.3",

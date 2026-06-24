@@ -121,25 +121,28 @@ const calculatePlanetaryPositions = (circularHoroscope) => {
 const calculateHouses = (circularHoroscope) => {
   const houses = [];
 
+  // Hole die Hauptachsen direkt von der Bibliothek
   const ascendant = circularHoroscope.Ascendant?.ChartPosition?.Ecliptic?.DecimalDegrees || 0;
   const midheaven = circularHoroscope.Midheaven?.ChartPosition?.Ecliptic?.DecimalDegrees || 0;
 
-  for (let i = 1; i <= 12; i++) {
+  // Die Bibliothek liefert Häuser als Array mit Index 0-11 (nicht 1-12!)
+  // Houses[0] = Haus 1, Houses[1] = Haus 2, ..., Houses[11] = Haus 12
+  for (let i = 0; i < 12; i++) {
     const house = circularHoroscope.Houses[i];
+    const houseNumber = i + 1; // Hausnummer 1-12
     let cusp;
 
     if (house && house.ChartPosition && house.ChartPosition.StartPosition) {
+      // Verwende die StartPosition der Bibliothek (Placidus-System)
+      // Die Bibliothek liefert bereits korrekte Werte inkl. Aszendent für Haus 1
       cusp = house.ChartPosition.StartPosition.Ecliptic.DecimalDegrees;
-    } else if (i === 1) {
-      cusp = ascendant;
-    } else if (i === 12 && houses.length === 11) {
-      cusp = (houses[0].angle - 30 + 360) % 360;
     } else {
+      console.warn(`Haus ${houseNumber} konnte nicht von der Bibliothek geladen werden`);
       continue;
     }
 
     houses.push({
-      houseNumber: i,
+      houseNumber: houseNumber,
       angle: cusp,
       zodiacSign: getZodiacSign(cusp),
       planets: [],

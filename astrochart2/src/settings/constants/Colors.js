@@ -4,7 +4,7 @@
 * @type {String}
 * @default #fff
 */
-export const CHART_BACKGROUND_COLOR = "transparent";
+export const CHART_BACKGROUND_COLOR = "#fff";
 
 /*
 * Default color of circles in charts
@@ -28,7 +28,7 @@ export const CHART_LINE_COLOR = "#666";
 * @type {String}
 * @default #333
 */
-export const CHART_TEXT_COLOR = "#bbb";
+export const CHART_TEXT_COLOR = "#fff";
 
 /*
 * Default color of mqin axis - As, Ds, Mc, Ic
@@ -44,7 +44,7 @@ export const CHART_MAIN_AXIS_COLOR = "#000";
 * @type {String}
 * @default #000
 */
-export const CHART_SIGNS_COLOR = "#333";
+export const CHART_SIGNS_COLOR = "#fff";
 
 /*
 * Default color of signs in charts (arise symbol, taurus symbol, ...)
@@ -60,7 +60,7 @@ export const CHART_POINTS_COLOR = "#000";
 * @type {String}
 * @default #333
 */
-export const POINT_PROPERTIES_COLOR = "#333"
+export const POINT_PROPERTIES_COLOR = "#fff"
 
 /*
 * Aries color
@@ -68,7 +68,7 @@ export const POINT_PROPERTIES_COLOR = "#333"
 * @type {String}
 * @default #FF4500
 */
-export const COLOR_ARIES = "#fff";
+export const COLOR_ARIES = "#333";
 
 /*
 * Taurus color
@@ -76,7 +76,7 @@ export const COLOR_ARIES = "#fff";
 * @type {String}
 * @default #8B4513
 */
-export const COLOR_TAURUS = "#D3D3D3";
+export const COLOR_TAURUS = "#333";
 
 /*
 * Geminy color
@@ -84,7 +84,7 @@ export const COLOR_TAURUS = "#D3D3D3";
 * @type {String}
 * @default #87CEEB
 */
-export const COLOR_GEMINI= "#fff";
+export const COLOR_GEMINI= "#333";
 
 /*
 * Cancer color
@@ -92,7 +92,7 @@ export const COLOR_GEMINI= "#fff";
 * @type {String}
 * @default #27AE60
 */
-export const COLOR_CANCER = "#D3D3D3";
+export const COLOR_CANCER = "#333";
 
 /*
 * Leo color
@@ -100,7 +100,7 @@ export const COLOR_CANCER = "#D3D3D3";
 * @type {String}
 * @default #FF4500
 */
-export const COLOR_LEO = "#fff";
+export const COLOR_LEO = "#333";
 
 /*
 * Virgo color
@@ -108,7 +108,7 @@ export const COLOR_LEO = "#fff";
 * @type {String}
 * @default #8B4513
 */
-export const COLOR_VIRGO = "#D3D3D3";
+export const COLOR_VIRGO = "#333";
 
 /*
 * Libra color
@@ -116,7 +116,7 @@ export const COLOR_VIRGO = "#D3D3D3";
 * @type {String}
 * @default #87CEEB
 */
-export const COLOR_LIBRA = "#fff";
+export const COLOR_LIBRA = "#333";
 
 /*
 * Scorpio color
@@ -124,7 +124,7 @@ export const COLOR_LIBRA = "#fff";
 * @type {String}
 * @default #27AE60
 */
-export const COLOR_SCORPIO = "#D3D3D3";
+export const COLOR_SCORPIO = "#333";
 
 /*
 * Sagittarius color
@@ -132,7 +132,7 @@ export const COLOR_SCORPIO = "#D3D3D3";
 * @type {String}
 * @default #FF4500
 */
-export const COLOR_SAGITTARIUS = "#fff";
+export const COLOR_SAGITTARIUS = "#333";
 
 /*
 * Capricorn color
@@ -140,7 +140,7 @@ export const COLOR_SAGITTARIUS = "#fff";
 * @type {String}
 * @default #8B4513
 */
-export const COLOR_CAPRICORN = "#D3D3D3";
+export const COLOR_CAPRICORN = "#333";
 
 /*
 * Aquarius color
@@ -148,7 +148,7 @@ export const COLOR_CAPRICORN = "#D3D3D3";
 * @type {String}
 * @default #87CEEB
 */
-export const COLOR_AQUARIUS = "#fff";
+export const COLOR_AQUARIUS = "#333";
 
 /*
 * Pisces color
@@ -156,7 +156,7 @@ export const COLOR_AQUARIUS = "#fff";
 * @type {String}
 * @default #27AE60
 */
-export const COLOR_PISCES = "#D3D3D3";
+export const COLOR_PISCES = "#333";
 
 /*
 * Color of circles in charts
@@ -164,7 +164,7 @@ export const COLOR_PISCES = "#D3D3D3";
 * @type {String}
 * @default #333
 */
-export const CIRCLE_COLOR = "#fff";
+export const CIRCLE_COLOR = "transparent";
 
 /*
 * Color of aspects

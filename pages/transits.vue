@@ -252,8 +252,8 @@ const getAspectName = (aspect) => {
 };
 
 // Load profiles and auto-select if available
-onMounted(() => {
-    profilesStore.loadFromLocalStorage();
+onMounted(async () => {
+    await profilesStore.fetchProfiles();
 
     // Auto-select my profile if available
     if (profilesStore.myProfile) {

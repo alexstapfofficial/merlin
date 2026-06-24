@@ -1,5 +1,6 @@
 <template>
     <div class="table-container">
+      <div class="table">
       <table class="aspect-matrix  font-astronomicon border-collapse border border-none" id="aspect-matrix">
         <thead>
           <tr>
@@ -28,7 +29,6 @@
             }"
             >
             <span v-if="rowIndex < colIndex">
-                {{ console.log(rowIndex, colIndex) }}
                 {{ getAspectSymbol(planetRow.name, planets[colIndex].name) }}
             </span>
             </td>
@@ -40,6 +40,7 @@
           </tr>
         </tbody>
       </table>
+      </div>
     </div>
   </template>
 <script setup>
@@ -48,7 +49,7 @@ import { useBirthDataStore } from "~/stores/birthDataStore";
 const birthDataStore = useBirthDataStore();
 const { horoscope } = storeToRefs(birthDataStore);
 
-const aspects = horoscope.value?.aspects || [];
+const aspects = computed(() => horoscope.value?.aspects || []);
 
 // Planetenliste
 const planets = [
@@ -63,14 +64,13 @@ const planets = [
   { name: "Neptune", symbol: "Y" },
   { name: "Pluto", symbol: "Z" },
   { name: "Chiron", symbol: "q" },
-  { name: "NNode", symbol: "N" },
-  { name: "Lilith", symbol: "l" },
+  { name: "NNode", symbol: "g" },
+  { name: "Lilith", symbol: "z" },
 ];
 
 // Hilfsfunktion: Aspekt-Symbol
 const getAspectSymbol = (planet1, planet2) => {
-    const aspect = aspects.find(a => a.planets.includes(planet1) && a.planets.includes(planet2));
-console.log(aspect);
+    const aspect = aspects.value.find(a => a.planets.includes(planet1) && a.planets.includes(planet2));
   if (aspect) {
     switch (aspect.aspect) {
       case "conjunction":
@@ -87,6 +87,7 @@ console.log(aspect);
         return "";
     }
   }
+  return "";
 };
 
 const { downloadAsPng } = useDownloadImage();
@@ -99,13 +100,42 @@ const downloadAspectMatrixAsPng=()=>{
 <style scoped>
 .aspect-matrix th,
 .aspect-matrix td {
-  font: 700 1rem 'Astronomicon'; 
+  font: 700 1rem 'Astronomicon';
   aspect-ratio: 1;
   width: 1.5rem;
   height: 1.5rem;
 }
 
-.table-container {
+.table {
   aspect-ratio: 1;
+  display: inline-block;
+}
+
+.table-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 0;
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    padding: 0;
+    margin: 0;
+    align-items: flex-start;
+  }
+
+  .table {
+    display: inline-block;
+    aspect-ratio: auto;
+  }
+
+  .aspect-matrix th,
+  .aspect-matrix td {
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 0.875rem;
+  }
 }
 </style>

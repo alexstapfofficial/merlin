@@ -12,7 +12,7 @@ export const RADIX_ID = "radix"
 * @type {Number}
 * @default 27
 */
-export const RADIX_POINTS_FONT_SIZE = 27
+export const RADIX_POINTS_FONT_SIZE = 32
 
 /*
 * Font size - signs
@@ -20,7 +20,7 @@ export const RADIX_POINTS_FONT_SIZE = 27
 * @type {Number}
 * @default 27
 */
-export const RADIX_SIGNS_FONT_SIZE = 27
+export const RADIX_SIGNS_FONT_SIZE = 32     
 
 /*
 * Font size - axis (As, Ds, Mc, Ic)
@@ -28,4 +28,4 @@ export const RADIX_SIGNS_FONT_SIZE = 27
 * @type {Number}
 * @default 24
 */
-export const RADIX_AXIS_FONT_SIZE = 32
+export const RADIX_AXIS_FONT_SIZE = 48
