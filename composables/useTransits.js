@@ -21,7 +21,7 @@ export const useTransits = () => {
       const transitHour = exactTime ? transitDate.getHours() : 12;
       const transitMinute = exactTime ? transitDate.getMinutes() : 0;
 
-      const response = await $fetch('/api/transits', {
+      const response = await useApi()('/api/transits', {
         method: 'POST',
         body: {
           birth: {

@@ -335,7 +335,7 @@ const interpretSynastry = async () => {
   interpretationLoading.value = true;
 
   try {
-    const response = await $fetch('/api/interpret-synastry', {
+    const response = await useApi()('/api/interpret-synastry', {
       method: 'POST',
       body: {
         aspects: synastryResult.value.synastryAspects,
@@ -399,6 +399,7 @@ const getCategoryColor = (percentage) => {
 .synastry-page {
   min-height: 100vh;
   background: #F5ECDC;
+  padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: 80px;
 }
 

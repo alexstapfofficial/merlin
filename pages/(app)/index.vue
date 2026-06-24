@@ -83,7 +83,7 @@ const signOut = async () => {
 </script>
 
 <style scoped>
-.apphome { padding: 28px 22px; max-width: 560px; margin: 0 auto; }
+.apphome { padding: calc(28px + env(safe-area-inset-top, 0px)) 22px 28px; max-width: 560px; margin: 0 auto; }
 .apphome__eyebrow { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted, #8F8978); }
 .apphome__title { font-size: 34px; font-weight: 700; margin-top: 4px; }
 .apphome__state { margin-top: 24px; color: var(--muted, #8F8978); }

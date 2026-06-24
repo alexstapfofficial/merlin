@@ -15,7 +15,7 @@ export const useBirthChart = () => {
 
     try {
       // Call the birth-chart API with the correct format
-      const response = await $fetch('/api/birthchart', {
+      const response = await useApi()('/api/birthchart', {
         method: 'POST',
         body: {
           birthdate: {

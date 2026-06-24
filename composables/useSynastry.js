@@ -1,7 +1,7 @@
 export const useSynastry = () => {
   const calculateSynastry = async (person1Data, person2Data) => {
     try {
-      const response = await $fetch('/api/synastry', {
+      const response = await useApi()('/api/synastry', {
         method: 'POST',
         body: {
           person1: {
