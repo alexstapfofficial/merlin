@@ -48,25 +48,27 @@ export const useBirthDataStore = defineStore("birthdata", {
         this.utcDate = new Date(this.birthDatetime.getTime() + this.birthDatetime.getTimezoneOffset() * 60000);
     },
     async fetchHoroscope() {
-      // Fetch horoscope data here
+      // Send the RAW local birth time (the clock time at the birthplace).
+      // circular-natal-horoscope-js derives the timezone from the coordinates
+      // and converts to UTC itself — so we must NOT pre-shift the time here
+      // (the old utcDate math used the browser's timezone and shifted twice,
+      // which threw the Ascendant off by ~1 sign).
       const data = await $fetch('/api/horoscope', {
         method: 'POST',
         body: {
           birthdate: {
-            birthyear: this.utcDate.getFullYear(),
-            birthmonth: this.utcDate.getMonth(),
-            birthday: this.utcDate.getDate(),
+            birthyear: this.birthdate.birthyear,
+            birthmonth: this.birthdate.birthmonth, // 0-based; the API adds +1
+            birthday: this.birthdate.birthday,
           },
           birthtime: {
-            birthhour: this.utcDate.getHours(),
-            birthminute: this.utcDate.getMinutes(),
+            birthhour: this.birthtime.birthhour,
+            birthminute: this.birthtime.birthminute,
           },
-          birthlocation: this.coordinates
+          birthlocation: this.coordinates,
         },
       });
-      console.log('Fetched horoscope data:', data);
       this.horoscope = data.horoscope;
-      console.log('Store horoscope after set:', this.horoscope);
     }
   },
 });

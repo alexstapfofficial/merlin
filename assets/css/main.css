@@ -12,12 +12,183 @@
     src: url("~/assets/fonts/just-cosmic.ttf") format('truetype')
 }
 
-/* Custom font utilities */
-.font-astronomicon {
-  font-family: "Astronomicon", serif;
+/* ─── Merlin design system ───────────────────────────────────────────────
+   Cream paper + warm ink, two oklch-paired accents (gold 70° / plum 320°).
+   Type stack: JustCosmic display · Astronomicon glyphs · Inter body ·
+   JetBrains Mono data. Light mode only — no dark mode.
+*/
+:root {
+  --paper:    #EFE9D8;
+  --paper-2:  #E7DFC9;
+  --card:     #FBF6E8;
+  --ink:      #1A1814;
+  --ink-2:    #5A554A;
+  --muted:    #8F8978;
+  --line:     #E3DBC8;
+  --hair:     #C8BEA4;
+
+  --gold:       oklch(0.62 0.12 70);
+  --plum:       oklch(0.62 0.12 320);
+  --cool:       #7BA0B5;
+  --gold-light: #E8C988;
+
+  --display: 'JustCosmic', Georgia, serif;
+  --astro:   'Astronomicon', 'Apple Symbols', serif;
+  --body:    'Inter', -apple-system, system-ui, sans-serif;
+  --mono:    'JetBrains Mono', ui-monospace, Menlo, monospace;
 }
 
-.font-justcosmic {
-  font-family: "JustCosmic", sans-serif;
+/* ─── Font utilities (kept for backwards compat) ───────────────────────── */
+.font-astronomicon { font-family: "Astronomicon", serif; }
+.font-justcosmic   { font-family: "JustCosmic", sans-serif; }
+
+/* ─── Merlin atoms ─────────────────────────────────────────────────────── */
+.m-app {
+  min-height: 100dvh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  -webkit-font-smoothing: antialiased;
 }
 
+/* full-height mobile screen with a warm gold halo at the top */
+.m-screen {
+  position: relative;
+  min-height: 100dvh;
+  background:
+    radial-gradient(140% 55% at 50% 0%, rgba(176,122,44,0.18) 0%, transparent 55%),
+    var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+}
+.m-screen--plum {
+  background:
+    radial-gradient(140% 55% at 50% 0%, rgba(163,98,150,0.16) 0%, transparent 55%),
+    var(--paper);
+}
+/* inner padding: top safe area + room for the floating tab bar */
+.m-screen__inner {
+  position: relative;
+  padding: 14px 22px calc(96px + env(safe-area-inset-bottom, 0px));
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.m-eyebrow {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.m-display {
+  font-family: var(--display);
+  line-height: 1.05;
+  letter-spacing: 0.2px;
+  color: inherit;
+}
+.m-glyph { font-family: var(--astro); line-height: 1; }
+.m-mono  { font-family: var(--mono); }
+
+.m-card {
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+}
+.m-card--night {
+  background: var(--ink);
+  color: #F1ECDF;
+  border: none;
+}
+
+.m-pill {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 100px;
+  font-size: 12.5px;
+  font-weight: 600;
+  background: var(--ink);
+  color: #F1ECDF;
+  border: none;
+  cursor: pointer;
+}
+.m-pill--ghost {
+  background: rgba(241,236,223,0.10);
+  color: #F1ECDF;
+  border: 0.5px solid rgba(241,236,223,0.16);
+}
+
+.m-divider { height: 1px; background: var(--line); }
+
+/* primary dark action button */
+.m-btn {
+  height: 54px;
+  border-radius: 16px;
+  border: none;
+  background: var(--ink);
+  color: #F1ECDF;
+  font-family: var(--display);
+  font-size: 18px;
+  letter-spacing: 0.4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.m-back-btn {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-2);
+  flex: none;
+}
+
+/* ─── Druck / PDF-Export ──────────────────────────────────────────────────
+   Gemeinsame Regeln für jede druckbare Seite: Seitenformat, Farben erhalten,
+   App-Chrome ausblenden, und die in v-html gerenderte Langform-Prosa sauber
+   über Seitenumbrüche führen. Seiten-spezifisches (Deckblatt, Kapitel-Umbrüche)
+   liegt in der jeweiligen Seite.
+*/
+@media print {
+  @page {
+    size: A4;
+    margin: 18mm 16mm 16mm;
+  }
+
+  /* Hintergründe, Gold-Akzente & dunkle Badges originalgetreu drucken */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html, body {
+    background: #fff !important;
+  }
+
+  /* globales App-Chrome raus */
+  .m-tabbar { display: none !important; }
+
+  /* keine Hintergrundfarbe im Druck → reines Weiß, ruhiges Dokument */
+  .m-screen { background: #fff !important; min-height: 0 !important; }
+  .m-card { background: transparent !important; }
+  .m-screen__inner {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Pagination der Langform-Prosa (keine konkurrierenden Bildschirm-Regeln,
+     greift daher trotz globaler Spezifität). Größen/Abstände werden in
+     ReadingArticle.vue gesetzt, wo die scoped-Spezifität passt. */
+  .ra__prose p { orphans: 3; widows: 3; }
+  .ra__prose h2, .ra__prose h3 { break-after: avoid; }
+  .ra__prose li, .ra__prose .md-key, .ra__prose .md-reflect { break-inside: avoid; }
+}

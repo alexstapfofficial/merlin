@@ -44,6 +44,14 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'de'
       },
+      link: [
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap'
+        }
+      ],
       script: [
         {
           src: "https://github.com/Kibo/AstrologyChart2/tree/master/dist#:~:text=8%20months%20ago-,astrochart2.min.js,-v0.7.3",

@@ -1,85 +1,133 @@
 <template>
-  <nav class="bottom-nav">
-    <NuxtLink to="/" class="nav-link" :class="{ active: route.path === '/' }">
-      <UIcon name="i-heroicons-user-circle" class="nav-icon" />
-      <span class="nav-label">Profil</span>
-    </NuxtLink>
-    <NuxtLink to="/horoscopes" class="nav-link" :class="{ active: route.path === '/horoscope' }">
-      <UIcon name="i-heroicons-sparkles" class="nav-icon" />
-      <span class="nav-label">Horoskop</span>
-    </NuxtLink>
-    <NuxtLink to="/synastry" class="nav-link" :class="{ active: route.path === '/partner' }">
-      <UIcon name="i-heroicons-heart" class="nav-icon" />
-      <span class="nav-label">Partner</span>
-    </NuxtLink>
-    <NuxtLink to="/wiki" class="nav-link" :class="{ active: route.path === '/wiki' }">
-      <UIcon name="i-heroicons-book-open" class="nav-icon" />
-      <span class="nav-label">Wiki</span>
-    </NuxtLink>
+  <nav class="m-tabbar">
+    <template v-for="tab in tabs" :key="tab.to">
+      <!-- hervorgehobener Mittel-Tab -->
+      <NuxtLink
+        v-if="tab.center"
+        :to="tab.to"
+        class="m-tab m-tab--center"
+        :class="{ active: isActive(tab) }"
+        :aria-label="tab.label"
+      >
+        <span class="m-tab__fab">
+          <UIcon :name="tab.icon" class="m-tab__fab-icon" />
+        </span>
+        <span class="m-tab__label m-tab__label--center">{{ tab.label }}</span>
+      </NuxtLink>
+
+      <!-- Standard-Tab -->
+      <NuxtLink
+        v-else
+        :to="tab.to"
+        class="m-tab"
+        :class="{ active: isActive(tab) }"
+      >
+        <span v-if="isActive(tab)" class="m-tab__dot" />
+        <UIcon :name="tab.icon" class="m-tab__icon" />
+        <span class="m-tab__label">{{ tab.label }}</span>
+      </NuxtLink>
+    </template>
   </nav>
 </template>
 
 <script setup>
 const route = useRoute();
+
+const tabs = [
+  { to: '/',           label: 'Heute',     icon: 'i-heroicons-home',      match: ['/'] },
+  { to: '/himmel',     label: 'Himmel',    icon: 'i-heroicons-star',      match: ['/himmel'] },
+  { to: '/deutungen',  label: 'Deutungen', icon: 'i-heroicons-sparkles',  match: ['/deutungen'], center: true },
+  // Synastrie/Kreis vorerst aus dem Menü genommen — Seiten & Komponenten bleiben erhalten.
+  { to: '/wiki',       label: 'Wiki',   icon: 'i-heroicons-book-open', match: ['/wiki'] },
+  { to: '/onboarding', label: 'Profil', icon: 'i-heroicons-user',      match: ['/onboarding', '/profile'] },
+];
+
+const isActive = (tab) => {
+  if (tab.to === '/') return route.path === '/';
+  return tab.match.some((m) => route.path === m || route.path.startsWith(m + '/'));
+};
 </script>
 
 <style scoped>
-.bottom-nav {
+.m-tabbar {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: #1F1D20;
-  border-top: 2px solid #4D4845;
+  left: 14px;
+  right: 14px;
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  height: 62px;
+  max-width: 452px;
+  margin: 0 auto;
+  border-radius: 22px;
+  background: rgba(251, 246, 232, 0.92);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 0.5px solid rgba(26, 24, 20, 0.08);
+  box-shadow: 0 10px 30px rgba(80, 60, 30, 0.10);
   display: flex;
   justify-content: space-around;
-  padding: 0.75rem 0;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+  align-items: center;
   z-index: 100;
 }
 
-.nav-link {
+.m-tab {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.5rem 1rem;
-  min-width: 70px;
-  color: #7B7369;
+  gap: 3px;
+  padding: 4px 8px;
   text-decoration: none;
-  transition: all 0.2s;
+  color: rgba(26, 24, 20, 0.45);
+  transition: color 0.2s;
 }
 
-.nav-link:hover {
-  color: #F5ECDC;
-  transform: translateY(-2px);
+.m-tab.active {
+  color: var(--ink);
 }
 
-.nav-link.active {
-  color: #F5ECDC;
+.m-tab__dot {
+  position: absolute;
+  top: -2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--gold);
 }
 
-.nav-link.active .nav-icon {
-  color: #F5ECDC;
+.m-tab__icon {
+  width: 22px;
+  height: 22px;
 }
 
-.nav-icon {
-  font-size: 1.5rem;
-  transition: all 0.2s;
+.m-tab__label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1px;
 }
 
-.nav-label {
-  font-size: 0.7rem;
-  font-weight: 500;
+/* ─── hervorgehobener Mittel-Tab ──────────────────────────────────────── */
+.m-tab--center {
+  margin-top: -34px;
+  gap: 5px;
+  color: var(--ink);
 }
-
-@media (max-width: 768px) {
-  .nav-icon {
-    font-size: 1.35rem;
-  }
-
-  .nav-label {
-    font-size: 0.65rem;
-  }
+.m-tab__fab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--gold-light);
+  border: 3px solid rgba(251, 246, 232, 0.92);
+  box-shadow: 0 8px 20px rgba(80, 60, 30, 0.28);
+  transition: transform 0.2s;
 }
+.m-tab--center:active .m-tab__fab { transform: scale(0.94); }
+.m-tab--center.active .m-tab__fab {
+  box-shadow: 0 8px 22px rgba(176, 122, 44, 0.45);
+}
+.m-tab__fab-icon { width: 26px; height: 26px; }
+.m-tab__label--center { font-size: 10.5px; }
 </style>

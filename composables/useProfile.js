@@ -31,8 +31,8 @@ export const useProfile = () => {
     // Fetch horoscope from API
     await birthDataStore.fetchHoroscope();
 
-    // Navigate to overview
-    await router.push('/transits');
+    // Navigate to the chart overview
+    await router.push('/himmel');
   };
 
   /**

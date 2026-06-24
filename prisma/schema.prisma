@@ -10,12 +10,41 @@ datasource db {
 model Profile {
   id          String   @id @default(cuid())
   name        String
-  birthdate   Json
-  birthtime   Json
   isOwner     Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   coordinates Json
+  birthdate   Json
+  birthtime   Json
+
+  readings    ChartReading[]
+}
+
+/// Per-profile holistic interpretations (the synthesis for one person's chart).
+model ChartReading {
+  id            String   @id @default(cuid())
+  profileId     String
+  profile       Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  section       String
+  markdown      String
+  inputHash     String
+  model         String
+  promptVersion Int
+  createdAt     DateTime @default(now())
+
+  @@unique([profileId, section, promptVersion])
+}
+
+/// Cross-user, reusable building blocks (e.g. "Mond in Fische im 11. Haus").
+model InterpretationBlock {
+  id            String   @id @default(cuid())
+  key           String
+  markdown      String
+  model         String
+  promptVersion Int
+  createdAt     DateTime @default(now())
+
+  @@unique([key, promptVersion])
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -55,5 +84,14 @@ model geonames_raw {
   timezone       String?
   mod_date       DateTime? @db.Date
 
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model valid_orte {
+  nrm String?
+
+  @@index([nrm])
   @@ignore
 }
